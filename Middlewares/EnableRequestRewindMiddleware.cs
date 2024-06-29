@@ -1,4 +1,4 @@
-﻿namespace StockKAutoManagement_API.Middlewares;
+﻿namespace mypaperwork.Middlewares;
 public class EnableRequestRewindMiddleware
 {
     private readonly RequestDelegate _next;

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
-using StockKAutoManagement_API.Models;
+using mypaperwork.Models;
 
-namespace StockKAutoManagement_API.Helpers;
+namespace mypaperwork.Middlewares;
 
 public class TransformResponse: ControllerBase
 {

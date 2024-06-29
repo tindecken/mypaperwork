@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using StockKAutoCommonModels;
-using StockKAutoManagement_API.DBContexts;
+using mypaperwork.Models;
+using mypaperwork.Models.Database;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
@@ -18,7 +18,7 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         if (allowAnonymous) return;
         
         // authorize based on user role
-        var user = (Users)context.HttpContext.Items["User"];
+        var user = (Users)context.HttpContext.Items["Users"];
         UserRole currentUserRole;
         if (user == null)
         {

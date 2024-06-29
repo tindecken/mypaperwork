@@ -5,9 +5,9 @@ using System.Text;
 using Microsoft.AspNetCore.Http.Extensions;
 using Newtonsoft.Json;
 using Serilog;
-using StockKAutoManagement_API.Models;
+using mypaperwork.Models;
 
-namespace StockKAutoManagement_API.Middlewares;
+namespace mypaperwork.Middlewares;
 
 public class ExceptionMiddleware
 {

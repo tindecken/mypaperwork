@@ -1,24 +1,23 @@
-using StockKAutoManagement_API.AppSettings;
-using StockKAutoManagement_API.Services.User;
-using StockKAutoManagement_API.Utils;
+using mypaperwork.Services.User;
+using mypaperwork.Utils;
 
-namespace StockKAutoManagement_API.Middlewares;
+namespace mypaperwork.Middlewares;
 public class JwtMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly string _secret;
-    private readonly AppSetting _appSetting;
+    private readonly string _JWTsecret;
+    private readonly AppSettings _appSettings;
     private readonly JWTUtils _jwtUtils;
 
-    public JwtMiddleware(RequestDelegate next, AppSetting appSetting, JWTUtils jwtUtils)
+    public JwtMiddleware(RequestDelegate next, AppSettings appSettings, JWTUtils jwtUtils)
     {
         _next = next;
-        _appSetting = appSetting;
-        _secret = _appSetting.Secret;
+        _appSettings = appSettings;
+        _JWTsecret = _appSettings.JWTSecret;
         _jwtUtils = jwtUtils;
     }
 
-    public async Task Invoke(HttpContext context, UserService userService)
+    public async Task Invoke(HttpContext context, UserServices userService)
     {
         var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
