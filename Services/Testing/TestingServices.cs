@@ -28,7 +28,7 @@ public class TestingServices
 
         return responseData;
     }
-    public async Task<GenericResponseData> SerialLog()
+    public async Task<GenericResponseData> SeriLog()
     {
         Log.Information("Hello world");
         var responseData = new GenericResponseData

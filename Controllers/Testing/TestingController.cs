@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
 using mypaperwork.Models;
+using mypaperwork.Services.Logging;
 using mypaperwork.Services.Testing;
 
 namespace mypaperwork.Controllers.Testing;
@@ -10,9 +11,12 @@ namespace mypaperwork.Controllers.Testing;
 public class Testing : TransformResponse
 {
     private readonly TestingServices _testingServices;
-    public Testing(TestingServices testingServices)
+    private readonly LoggingServices _loggingServices;
+    public Testing(TestingServices testingServices, LoggingServices loggingServices)
     {
         _testingServices = testingServices;
+        _loggingServices = loggingServices;
+
     }
 
     [AllowAnonymous]
@@ -24,12 +28,18 @@ public class Testing : TransformResponse
     }
     
     [AllowAnonymous]
-    [HttpGet("seriallog")]
+    [HttpGet("serilog")]
     public async Task<IActionResult> SerialLog()
     {
-        var response = await _testingServices.SerialLog();
+        var response = await _testingServices.SeriLog();
         return Transform(response);
     }
-
+    [AllowAnonymous]
+    [HttpGet("logging")]
+    public async Task<IActionResult> AddLog()
+    {
+        var response = await _loggingServices.AddLog();
+        return Transform(response);
+    }
 }
 

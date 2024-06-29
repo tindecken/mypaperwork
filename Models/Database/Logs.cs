@@ -5,8 +5,8 @@ namespace mypaperwork.Models.Database
     [Table("Logs")]
     public class Logs
     {
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        [PrimaryKey]
+        public string UUID { get; set; }
         public string? ActionType { get; set; }
         public string? Method { get; set; }
         public string? Message { get; set; }
@@ -14,6 +14,6 @@ namespace mypaperwork.Models.Database
         public string? NewData { get; set; }
         public int? ActionById { get; set; }
         public string? IPAddress { get; set; }
-        public DateTime ActionDate { get; set; } = DateTime.UtcNow;
+        public string ActionDate { get; set; } = DateTime.UtcNow.ToString("u");
     }
 }

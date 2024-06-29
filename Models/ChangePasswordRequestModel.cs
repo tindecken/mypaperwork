@@ -5,7 +5,7 @@ namespace mypaperwork.Models
     public class ChangePasswordRequestModel
     {
         [Required]
-        public int UserId { get; set; }
+        public int UserUUID { get; set; }
         [Required]
         public string CurrentPassword { get; set; }
         [Required]
