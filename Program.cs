@@ -6,6 +6,7 @@ using mypaperwork.Middlewares;
 using mypaperwork.Services.Logging;
 using mypaperwork.Services.TestingServices;
 using mypaperwork.Services.User;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.Configure<AppSettings>(builder.Configuration);
 builder.Services.AddSingleton<AppSettings>(appSettings => appSettings.GetRequiredService<IOptions<AppSettings>>().Value);
 builder.Services.AddTransient<JWTUtils>();

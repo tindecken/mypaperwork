@@ -1,4 +1,5 @@
-﻿using mypaperwork.Models;
+﻿using System.Net;
+using mypaperwork.Models;
 using mypaperwork.Utils;
 using mypaperwork.Models.Logging;
 
@@ -13,14 +14,15 @@ public class TestingServices
         _appSettings = new AppSettings();   
     }
 
-    public async Task GetAppSettings()
+    public async Task<GenericResponseData> GetAppSettings()
     {
         var responseData = new GenericResponseData();
-        var appSettings = new AppSettings();
-        responseData.Success = true;
+        responseData.Data = _appSettings;
         responseData.StatusCode = HttpStatusCode.OK;
-        responseData.Result = appSettings;
-        await HttpContextUtils.ErrorLogging(_httpContextAccessor, responseData);
+        responseData.Message = "App Settings";
+
+        return responseData;
+
     }
     
 }
