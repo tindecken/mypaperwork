@@ -1,28 +1,43 @@
 ﻿using System.Net;
 using mypaperwork.Models;
-using mypaperwork.Utils;
-using mypaperwork.Models.Logging;
+using mypaperwork.Services.Logging;
+using Serilog;
 
-namespace mypaperwork.Services.TestingServices;
+namespace mypaperwork.Services.Testing;
 public class TestingServices
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AppSettings _appSettings;
-    public TestingServices(IHttpContextAccessor httpContextAccessor)
+    private readonly LoggingServices _loggingServices;
+    public TestingServices(IHttpContextAccessor httpContextAccessor, AppSettings appSettings, LoggingServices loggingServices)
     {
         _httpContextAccessor = httpContextAccessor;
-        _appSettings = new AppSettings();   
+        _appSettings = appSettings;
+        _loggingServices = loggingServices;
     }
 
     public async Task<GenericResponseData> GetAppSettings()
     {
-        var responseData = new GenericResponseData();
-        responseData.Data = _appSettings;
-        responseData.StatusCode = HttpStatusCode.OK;
-        responseData.Message = "App Settings";
+        var responseData = new GenericResponseData
+        {
+            Success = true,
+            Data = _appSettings,
+            StatusCode = HttpStatusCode.OK,
+            Message = "App Settings"
+        };
 
         return responseData;
-
     }
-    
+    public async Task<GenericResponseData> SerialLog()
+    {
+        Log.Information("Hello world");
+        var responseData = new GenericResponseData
+        {
+            Success = true,
+            Data = _appSettings,
+            StatusCode = HttpStatusCode.OK,
+            Message = "Check the log file"
+        };
+        return responseData;
+    }
 }
