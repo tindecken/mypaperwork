@@ -185,10 +185,57 @@ public class TestingServices
             };
             await _sqliteDb.InsertAsync(paperworkCategory2);
 
+            // create 2 paperworks and associate with category "Mua Sắm"
+            var paperwork3 = new PaperWorks()
+            {
+                GUID = Guid.NewGuid().ToString(),
+                Name = "Mua Sắm 1",
+                Description = "Mua sắm 1",
+                IssuedDate = "2024-01-01",
+                Price = 1500,
+                PriceCurrency = "USD",
+                CreatedBy = newUser.GUID,
+
+            };
+            await _sqliteDb.InsertAsync(paperwork3);
+
+            // create paperwork 4 for category "Mua Sắm"
+            var paperwork4 = new PaperWorks()
+            {
+                GUID = Guid.NewGuid().ToString(),
+                Name = "Mua Sắm 2",
+                Description = "Mua sắm 2",
+                IssuedDate = "2024-02-01",
+                Price = 2500,
+                PriceCurrency = "USD",
+                CreatedBy = newUser.GUID,
+
+            };
+            await _sqliteDb.InsertAsync(paperwork4);
+
+            // Associate 2 paperworks with category "Mua Sắm"
+            var paperworkCategory3 = new PaperWorksCategories()
+            {
+                GUID = Guid.NewGuid().ToString(),
+                PaperWorkGUID = paperwork3.GUID,
+                CategoryGUID = category2.GUID,
+                CreatedBy = newUser.GUID
+            };
+            await _sqliteDb.InsertAsync(paperworkCategory3);    
+
+            var paperworkCategory4 = new PaperWorksCategories()
+            {
+                GUID = Guid.NewGuid().ToString(),
+                PaperWorkGUID = paperwork4.GUID,
+                CategoryGUID = category2.GUID,
+                CreatedBy = newUser.GUID
+            };
+            await _sqliteDb.InsertAsync(paperworkCategory4);    
+
             responseData.Data = newUser;
             responseData.Success = true;
             responseData.Message = "Successfully seeding database !";
-            return responseData;    
+            return responseData;
         }
 
         responseData.Data = null;
