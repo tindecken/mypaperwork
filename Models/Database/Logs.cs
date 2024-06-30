@@ -6,7 +6,7 @@ namespace mypaperwork.Models.Database
     public class Logs
     {
         [PrimaryKey]
-        public string UUID { get; set; }
+        public string GUID { get; set; }
         public string? ActionType { get; set; }
         public string? Method { get; set; }
         public string? Message { get; set; }

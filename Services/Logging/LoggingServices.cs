@@ -19,11 +19,11 @@ public class LoggingServices
         var responseData = new GenericResponseData();
 
         var httpContextUtils = new HttpContextUtils(_httpContextAccessor);
-        var userUUID = httpContextUtils.getUserUUID();
+        var userGUID = httpContextUtils.getUserGUID();
         var ipAddress = httpContextUtils.getClientIPAddress();
         var logging = new Logs()
         {
-            UUID = Guid.NewGuid().ToString()
+            GUID = Guid.NewGuid().ToString()
         };
         await _sqliteDb.InsertAsync(logging);
         var logs = await _sqliteDb.Table<Logs>().ToListAsync();

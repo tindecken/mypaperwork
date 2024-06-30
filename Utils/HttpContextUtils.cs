@@ -10,12 +10,12 @@ public class HttpContextUtils
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string getUserUUID()
+    public string getUserGUID()
     {
-        var userUUID = string.Empty;
+        var userGUID = string.Empty;
         var user = (Users)_httpContextAccessor.HttpContext.Items["Users"];
-        if (user != null) userUUID = user.UUID;
-        return userUUID;
+        if (user != null) userGUID = user.GUID;
+        return userGUID;
     }
 
     public string getClientIPAddress()

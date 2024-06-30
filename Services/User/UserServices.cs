@@ -94,7 +94,7 @@ public class UserServices
     //        responseData.StatusCode = HttpStatusCode.BadRequest;
     //        return responseData;
     //    }
-    //    var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == changePasswordData.UserUUID);
+    //    var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == changePasswordData.UserGUID);
     //    if (user == null)
     //    {
     //        responseData.Success = false;
@@ -132,7 +132,7 @@ public class UserServices
     //    ICryptoTransform cTransform = tripDes2.CreateEncryptor();
     //    byte[] resultArray = cTransform.TransformFinalBlock(DataToEncrypt, 0, DataToEncrypt.Length);
 
-    //    var userUpdate = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == changePasswordData.UserUUID);
+    //    var userUpdate = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == changePasswordData.UserGUID);
     //    userUpdate.Password = Convert.ToBase64String(resultArray);
     //    await _dbContext.SaveChangesAsync();
         
@@ -195,7 +195,7 @@ public class UserServices
         
     //    var createUser = _mapper.Map<Users>(createUserRequestModel);
     //    createUser.CreatedOn = DateTime.Now;
-    //    createUser.CreatedById = httpContextUtils.getUserUUID();
+    //    createUser.CreatedById = httpContextUtils.getUserGUID();
     //    createUser.Password = Convert.ToBase64String(resultArray);
     //    var a = await _dbContext.Users.AddAsync(createUser);
     //    await _dbContext.SaveChangesAsync();

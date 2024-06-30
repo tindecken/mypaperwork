@@ -23,7 +23,7 @@ public class JWTUtils
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new   ClaimsIdentity(new[] 
-            { new Claim("userUUID", users.UUID.ToString()),
+            { new Claim("userGUID", users.GUID.ToString()),
                 new Claim("role", users.Role),
                 new Claim("email", users.Email),
                 new Claim("userName", users.UserName),
@@ -57,10 +57,10 @@ public class JWTUtils
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userUUID = jwtToken.Claims.First(x => x.Type == "userUUID").Value;
+            var userGUID = jwtToken.Claims.First(x => x.Type == "userGUID").Value;
 
             // attach user to context on successful jwt validation
-            context.Items["Users"] = userService.GetById(userUUID);
+            context.Items["Users"] = userService.GetById(userGUID);
         }
         catch (Exception ex)
         {
