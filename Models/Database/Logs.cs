@@ -14,6 +14,6 @@ namespace mypaperwork.Models.Database
         public string? NewData { get; set; }
         public int? ActionById { get; set; }
         public string? IPAddress { get; set; }
-        public string ActionDate { get; set; } = DateTime.UtcNow.ToString("u");
+        public string CreateDate { get; set; } = DateTime.UtcNow.ToString("u");
     }
 }

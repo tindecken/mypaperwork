@@ -8,7 +8,9 @@ namespace mypaperwork.Models.Database
         [PrimaryKey]
         public string GUID { get; set; }
         public string Name { get; set; }
+        [Unique]
         public string UserName { get; set; }
+        [Unique]
         public string Email { get; set; }
         public string Password { get; set; }
         public string Role { get; set; }

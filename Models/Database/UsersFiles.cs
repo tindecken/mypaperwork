@@ -10,5 +10,6 @@ namespace mypaperwork.Models.Database
         public string FileGUID { get; set; }
         public string UserGUID { get; set; }
         public string Role { get; set; }
+        public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");
     }
 }

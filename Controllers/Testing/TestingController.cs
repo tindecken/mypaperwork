@@ -41,5 +41,12 @@ public class Testing : TransformResponse
         var response = await _loggingServices.AddLog();
         return Transform(response);
     }
+    [AllowAnonymous]
+    [HttpGet("seedingdatabase")]
+    public async Task<IActionResult> SeedingDatabase()
+    {
+        var response = await _testingServices.SeedingDatabase();
+        return Transform(response);
+    }
 }
 

@@ -36,6 +36,12 @@ var appSettings = builder.Services.BuildServiceProvider().GetService<AppSettings
 var sqliteDB = new SQLiteAsyncConnection(Path.Combine(Directory.GetCurrentDirectory(), appSettings.SQLiteDBPath));
 await sqliteDB.CreateTableAsync<Logs>();
 await sqliteDB.CreateTableAsync<Users>();
+await sqliteDB.CreateTableAsync<Files>();
+await sqliteDB.CreateTableAsync<UsersFiles>();
+await sqliteDB.CreateTableAsync<Categories>();
+await sqliteDB.CreateTableAsync<PaperWorks>();
+await sqliteDB.CreateTableAsync<PaperWorksCategories>();
+await sqliteDB.CreateTableAsync<Documents>();
 builder.Services.AddSingleton<SQLiteAsyncConnection>(sqliteDB);
 builder.Services.AddTransient<JWTUtils>();
 builder.Services.AddTransient<UserServices>();
