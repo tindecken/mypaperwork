@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using mypaperwork.Services.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using mypaperwork.Models.Database;
+using mypaperwork.Services.Document;
 using SQLite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +48,7 @@ builder.Services.AddTransient<JWTUtils>();
 builder.Services.AddTransient<UserServices>();
 builder.Services.AddTransient<LoggingServices>();
 builder.Services.AddTransient<TestingServices>();
+builder.Services.AddTransient<DocumentServices>();
 
 var app = builder.Build();
 app.UseMiddleware<EnableRequestRewindMiddleware>();

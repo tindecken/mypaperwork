@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
 using mypaperwork.Models;
+using mypaperwork.Services.Document;
 using mypaperwork.Services.Logging;
 using mypaperwork.Services.Testing;
 
@@ -10,43 +11,30 @@ namespace mypaperwork.Controllers.Testing;
 [Route("[controller]")]
 public class Document : TransformResponse
 {
-    private readonly TestingServices _testingServices;
-    private readonly LoggingServices _loggingServices;
-    public Document(TestingServices testingServices, LoggingServices loggingServices)
+    private readonly DocumentServices _documentServices;
+    public Document(DocumentServices documentServices)
     {
-        _testingServices = testingServices;
-        _loggingServices = loggingServices;
+        _documentServices = documentServices;
 
     }
 
     [AllowAnonymous]
-    [HttpGet]
-    public async Task<IActionResult> GetAppSettings()
+    [HttpPost]
+    public async Task<IActionResult> UploadFiles()
     {
-        var response = await _testingServices.GetAppSettings();
-        return Transform(response);
-    }
-    
-    [AllowAnonymous]
-    [HttpGet("serilog")]
-    public async Task<IActionResult> SerialLog()
-    {
-        var response = await _testingServices.SeriLog();
-        return Transform(response);
-    }
-    [AllowAnonymous]
-    [HttpGet("logging")]
-    public async Task<IActionResult> AddLog()
-     
-    {
-        var response = await _loggingServices.AddLog();
-        return Transform(response);
-    }
-    [AllowAnonymous]
-    [HttpGet("seedingdatabase")]
-    public async Task<IActionResult> SeedingDatabase()
-    {
-        var response = await _testingServices.SeedingDatabase();
+        var formCollection = await Request.ReadFormAsync();
+        var files = formCollection.Files;
+        var paperWorkGUID = formCollection["paperWorkGUID"];
+        if (string.IsNullOrEmpty(paperWorkGUID))
+        {
+            return BadRequest("PaperworkGUID is empty!");
+        }
+
+        if (files.Any(f => f.Length == 0))
+        {
+            return BadRequest();
+        }
+        var response = await _documentServices.Upload(paperWorkGUID, files);
         return Transform(response);
     }
 }
