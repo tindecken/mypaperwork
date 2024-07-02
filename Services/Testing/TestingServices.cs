@@ -71,7 +71,7 @@ public class TestingServices
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Hoang Nguyen",
                 Email = "tindecken@gmail.com",
-                Role = "Admin",
+                SystemRole = "Admin",
                 UserName = "tindecken",
                 Password = encryptedPassword
             };
@@ -82,7 +82,7 @@ public class TestingServices
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Hoang Nguyen 2",
                 Email = "tindecken2@gmail.com",
-                Role = "Admin",
+                SystemRole = "Admin",
                 UserName = "tindecken2",
                 Password = encryptedPassword
             };

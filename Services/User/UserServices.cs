@@ -1,8 +1,15 @@
 ﻿using mypaperwork.Models;
 using mypaperwork.Models.Authentication;
 using mypaperwork.Models.Database;
+using mypaperwork.Models.Logging;
 using mypaperwork.Services.Logging;
 using mypaperwork.Utils;
+using Newtonsoft.Json;
+using Serilog;
+using SQLite;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace mypaperwork.Services.User;
 public class UserServices
@@ -11,65 +18,82 @@ public class UserServices
     private readonly JWTUtils _jwtUtils;
     private readonly LoggingServices _loggingServiceses;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public UserServices(AppSettings appSettings, JWTUtils jwtUtils, LoggingServices loggingServiceses, IHttpContextAccessor httpContextAccessor)
+    private readonly SQLiteAsyncConnection _sqliteDb;
+    public UserServices(AppSettings appSettings, JWTUtils jwtUtils, LoggingServices loggingServiceses, IHttpContextAccessor httpContextAccessor, SQLiteAsyncConnection sqliteDb)
     {
         _JWTsecret = appSettings.JWTSecret;
         _jwtUtils = jwtUtils;
         _loggingServiceses = loggingServiceses;
         _httpContextAccessor = httpContextAccessor;
+        _sqliteDb = sqliteDb;
     }
     public async Task<GenericResponseData> Authenticate(AuthenticateRequestModel model)
     {
-        //Logs.Information($"AuthenticateRequestModel: {JsonConvert.SerializeObject(model)}");
+        Log.Information($"AuthenticateRequestModel: {JsonConvert.SerializeObject(model)}");
         var responseData = new GenericResponseData();
-        //var user = _dbContext.Users.FirstOrDefault(u => u.UserName == model.UserName);
-        //// return null if user not found
-        //if (user == null) return new GenericResponseData()
-        //    {
-        //        Success = false,
-        //        Message = $"Not found user: {model.UserName} !",
-        //        StatusCode = HttpStatusCode.Unauthorized,
-        //        Data = null,
-        //        Error = null
-        //    };
-        //byte[] data = Convert.FromBase64String(user.Password);
-        //MD5 md5 = MD5.Create();
-        //var tripDes = TripleDES.Create();
-        //tripDes.Key = md5.ComputeHash(Encoding.UTF8.GetBytes(_JWTsecret));
-        //tripDes.Mode = CipherMode.ECB;
+        var user = await _sqliteDb.Table<Users>().Where(u => u.UserName == model.UserName).FirstOrDefaultAsync();
+        // return null if user not found
+        if (user == null) return new GenericResponseData()
+        {
+            Success = false,
+            Message = "Incorrect username or password!",
+            StatusCode = HttpStatusCode.Unauthorized,
+            Data = null,
+            Error = null
+        };
+        if (user.IsEnabled == 0) { 
+            responseData.Success = false;
+            responseData.Message = "User is disabled, please contact administration!";
+            responseData.StatusCode = HttpStatusCode.Unauthorized;
+            _ = _loggingServiceses.AddLog(new LoggingDTO()
+            {
+                ActionType = ActionType.LoginFailed.ToString(),
+                Method = "Authenticate",
+                Message = $"User is disabled: {user.UserName}",
+            });
+            return responseData;
+        }
 
-        //ICryptoTransform transform = tripDes.CreateDecryptor();
-        //byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
-        //var decryptedPassword = Encoding.UTF8.GetString(results);
+        byte[] data = Convert.FromBase64String(user.Password);
+        MD5 md5 = MD5.Create();
+        var tripDes = TripleDES.Create();
+        tripDes.Key = md5.ComputeHash(Encoding.UTF8.GetBytes(_JWTsecret));
+        tripDes.Mode = CipherMode.ECB;
+        tripDes.Padding = PaddingMode.PKCS7;
 
-        //if (decryptedPassword.Equals(model.Password))
-        //{
-        //    // authentication successful so generate jwt token
-        //    var token = _jwtUtils.generateJwtToken(user);
-        //    Logs.Information("Token: {0}", token);
-        //    var response = new AuthenticateResponse(user, token);
-        //    responseData.Data = response;
-        //    responseData.Success = true;
-        //    responseData.Message = "Login successfully !";
-        //    _loggingServiceses.AddLog(new LogDTO()
-        //    {
-        //        ActionType = ActionType.LoginSuccess.ToString(),
-        //        Method = "Authenticate",
-        //        Message = $"Login success with user: {user.UserName}",
-        //    });
-        //}
-        //else
-        //{
-        //    responseData.Success = false;
-        //    responseData.Message = "Incorrect password !";
-        //    responseData.StatusCode = HttpStatusCode.BadRequest;
-        //    _loggingServiceses.AddLog(new LogDTO()
-        //    {
-        //        ActionType = ActionType.LoginFailed.ToString(),
-        //        Method = "Authenticate",
-        //        Message = $"Login failed with model: {JsonConvert.SerializeObject(model)}",
-        //    });
-        //}
+        ICryptoTransform transform = tripDes.CreateDecryptor();
+        byte[] results = transform.TransformFinalBlock(data, 0, data.Length);
+        var decryptedPassword = Encoding.UTF8.GetString(results);
+
+        if (decryptedPassword.Equals(model.Password))
+        {
+            // TODO: Get all files associated with users
+
+            // authentication successful so generate jwt token
+            var token = _jwtUtils.generateJwtToken(user);
+            var response = new AuthenticateResponse(user, token);
+            responseData.Data = response;
+            responseData.Success = true;
+            responseData.Message = "Login successfully !";
+            _ = _loggingServiceses.AddLog(new LoggingDTO()
+            {
+                ActionType = ActionType.LoginSuccess.ToString(),
+                Method = "Authenticate",
+                Message = $"Login success with user: {user.UserName}",
+            });
+        }
+        else
+        {
+            responseData.Success = false;
+            responseData.Message = "Incorrect username or password!";
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            _ = _loggingServiceses.AddLog(new LoggingDTO()
+            {
+                ActionType = ActionType.LoginFailed.ToString(),
+                Method = "Authenticate",
+                Message = $"Login failed with model: {JsonConvert.SerializeObject(model)}",
+            });
+        }
         return responseData;
     }
 

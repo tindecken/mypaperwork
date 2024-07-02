@@ -2,6 +2,7 @@
 using System.Text;
 using mypaperwork.Models;
 using mypaperwork.Models.Database;
+using mypaperwork.Models.Logging;
 using mypaperwork.Utils;
 using Serilog;
 using SQLite;
@@ -18,7 +19,7 @@ public class LoggingServices
         _sqliteDb = sqliteDb;
         _appSettings = appSettings;
     }
-    public async Task<GenericResponseData> AddLog()
+    public async Task<GenericResponseData> AddLog(LoggingDTO loggingDTO)
     {
         var responseData = new GenericResponseData();
 
@@ -27,7 +28,14 @@ public class LoggingServices
         var ipAddress = httpContextUtils.getClientIPAddress();
         var logging = new Logs()
         {
-            GUID = Guid.NewGuid().ToString()
+            GUID = Guid.NewGuid().ToString(),
+            ActionType = loggingDTO.ActionType,
+            Method = loggingDTO.Method,
+            Message = loggingDTO.Message,
+            OldData = loggingDTO.OldData,
+            NewData = loggingDTO.NewData,
+            ActionBy = userGUID,
+            IPAddress = ipAddress
         };
         await _sqliteDb.InsertAsync(logging);
         var logs = await _sqliteDb.Table<Logs>().ToListAsync();

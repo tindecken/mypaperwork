@@ -26,7 +26,7 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         }
         else
         {
-            bool isUserRoleInRoleList = Enum.TryParse(user.Role, out currentUserRole) && _userRoles.Contains(currentUserRole);
+            bool isUserRoleInRoleList = Enum.TryParse(user.SystemRole, out currentUserRole) && _userRoles.Contains(currentUserRole);
             if (_userRoles.Any() && !isUserRoleInRoleList)
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };

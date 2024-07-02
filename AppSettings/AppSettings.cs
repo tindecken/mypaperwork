@@ -6,5 +6,6 @@
         public string SQLiteDBSecret { get; set; }
         public string SQLiteDBPath { get; set; }
         public string StoragePath { get; set; }
+        public decimal MaxFileSize { get; set; }
     }
 }

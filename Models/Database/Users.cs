@@ -13,6 +13,7 @@ namespace mypaperwork.Models.Database
         [Unique]
         public string Email { get; set; }
         public string Password { get; set; }
-        public string Role { get; set; }
+        public string SystemRole { get; set; }
+        public int IsEnabled { get; set; } = 1;
     }
 }

@@ -7,7 +7,6 @@ using mypaperwork.Services.Logging;
 using mypaperwork.Services.User;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using mypaperwork.Services.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using mypaperwork.Models.Database;
 using mypaperwork.Services.Document;
 using SQLite;

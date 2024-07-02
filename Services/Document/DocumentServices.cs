@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Net;
+using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,17 @@ public class DocumentServices
         var responseData = new GenericResponseData();
 
         var storagePath = Path.Combine(Directory.GetCurrentDirectory(), _appSettings.StoragePath);
+        foreach (var file in files) { 
+            var fileSize = file.Length;
+            if (fileSize > _appSettings.MaxFileSize) {
+                responseData.StatusCode = HttpStatusCode.BadRequest;
+                responseData.Data = null;
+                responseData.Success = false;
+                responseData.Message = $"File size of file {ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName} is too large ({fileSize}/{_appSettings.MaxFileSize} bytes).";
+                return responseData;
+            }
+            else continue;
+        }
         foreach (var file in files)
         {
             var fileSize = file.Length;

@@ -24,7 +24,7 @@ public class JWTUtils
         {
             Subject = new   ClaimsIdentity(new[] 
             { new Claim("userGUID", users.GUID.ToString()),
-                new Claim("role", users.Role),
+                new Claim("systemRole", users.SystemRole),
                 new Claim("email", users.Email),
                 new Claim("userName", users.UserName),
             }),

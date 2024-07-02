@@ -1,12 +1,8 @@
-﻿using SQLite;
-
-namespace mypaperwork.Models.Database
+﻿namespace mypaperwork.Models.Logging
 {
-    [Table("Logs")]
-    public class Logs
+    public class LoggingDTO
     {
-        [PrimaryKey]
-        public string GUID { get; set; }
+        public int Id { get; set; }
         public string? ActionType { get; set; }
         public string? Method { get; set; }
         public string? Message { get; set; }
@@ -14,6 +10,15 @@ namespace mypaperwork.Models.Database
         public string? NewData { get; set; }
         public string? ActionBy { get; set; }
         public string? IPAddress { get; set; }
-        public string CreateDate { get; set; } = DateTime.UtcNow.ToString("u");
+        public DateTime? ActionDate { get; set; }
+    }
+    public enum ActionType
+    {
+        Create,
+        Update,
+        Delete,
+        LoginSuccess,
+        LoginFailed,
+        ChangePassword
     }
 }

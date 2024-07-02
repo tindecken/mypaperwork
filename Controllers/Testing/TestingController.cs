@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
 using mypaperwork.Models;
+using mypaperwork.Models.Logging;
 using mypaperwork.Services.Logging;
 using mypaperwork.Services.Testing;
 
@@ -38,7 +39,11 @@ public class Testing : TransformResponse
     [HttpGet("logging")]
     public async Task<IActionResult> AddLog()
     {
-        var response = await _loggingServices.AddLog();
+        var loggingDTO = new LoggingDTO(){ 
+            Message = "Hello world",
+            ActionType = ActionType.Create.ToString(),
+        };
+        var response = await _loggingServices.AddLog(loggingDTO);
         return Transform(response);
     }
     [AllowAnonymous]
