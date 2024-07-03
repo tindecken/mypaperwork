@@ -11,9 +11,9 @@ namespace mypaperwork.Controllers.Testing;
 [Route("[controller]")]
 public class Testing : TransformResponse
 {
-    private readonly TestingServices _testingServices;
+    private readonly FilesServices _testingServices;
     private readonly LoggingServices _loggingServices;
-    public Testing(TestingServices testingServices, LoggingServices loggingServices)
+    public Testing(FilesServices testingServices, LoggingServices loggingServices)
     {
         _testingServices = testingServices;
         _loggingServices = loggingServices;

@@ -7,11 +7,11 @@ namespace mypaperwork.Controllers.Authentication
 {
     [ApiController]
     [Route("[controller]")]
-    public class Authentication : TransformResponse
+    public class FilesController : TransformResponse
     {
         private readonly AppSettings _appSettings;
         private UserServices _userServices;
-        public Authentication(AppSettings appSettings, UserServices userServices)
+        public FilesController(AppSettings appSettings, UserServices userServices)
         {
             _appSettings = appSettings;
             _userServices = userServices;

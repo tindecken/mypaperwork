@@ -47,8 +47,9 @@ builder.Services.AddTransient<JWTUtils>();
 builder.Services.AddTransient<DBUtils>();
 builder.Services.AddTransient<UserServices>();
 builder.Services.AddTransient<LoggingServices>();
-builder.Services.AddTransient<TestingServices>();
+builder.Services.AddTransient<FilesServices>();
 builder.Services.AddTransient<DocumentServices>();
+builder.Services.AddTransient<FilesServices>();
 
 var app = builder.Build();
 app.UseMiddleware<EnableRequestRewindMiddleware>();
