@@ -14,6 +14,6 @@ namespace mypaperwork.Models.Database
         public string Email { get; set; }
         public string Password { get; set; }
         public string SystemRole { get; set; }
-        public int IsEnabled { get; set; } = 1;
+        public int IsDeleted { get; set; } = 1;
     }
 }

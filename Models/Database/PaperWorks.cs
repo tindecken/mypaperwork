@@ -16,5 +16,6 @@ namespace mypaperwork.Models.Database
         public string? CreatedBy { get; set; }
         public string? UpdatedDate { get; set; }
         public string? UpdatedBy { get; set; }
+        public int IsDeleted { get; set; } = 0;
     }
 }

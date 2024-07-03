@@ -44,6 +44,7 @@ await sqliteDB.CreateTableAsync<PaperWorksCategories>();
 await sqliteDB.CreateTableAsync<Documents>();
 builder.Services.AddSingleton<SQLiteAsyncConnection>(sqliteDB);
 builder.Services.AddTransient<JWTUtils>();
+builder.Services.AddTransient<DBUtils>();
 builder.Services.AddTransient<UserServices>();
 builder.Services.AddTransient<LoggingServices>();
 builder.Services.AddTransient<TestingServices>();

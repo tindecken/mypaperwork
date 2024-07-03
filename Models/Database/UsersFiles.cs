@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using System.Security.Cryptography.X509Certificates;
+using SQLite;
 
 namespace mypaperwork.Models.Database
 {
@@ -10,6 +11,8 @@ namespace mypaperwork.Models.Database
         public string FileGUID { get; set; }
         public string UserGUID { get; set; }
         public string Role { get; set; }
+        public int? IsSelected { get; set; } = 0;
         public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");
+        public int IsDeleted { get; set; } = 0;
     }
 }

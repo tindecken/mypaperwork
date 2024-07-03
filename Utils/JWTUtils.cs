@@ -15,18 +15,19 @@ public class JWTUtils
     {
         _appSettings = appSettings;
     }
-    public string generateJwtToken(Users users)
+    public string generateJwtToken(Users users, UsersFiles usersFiles)
     {
         // generate token that is valid for 7 days
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_appSettings.JWTSecret);
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new   ClaimsIdentity(new[] 
+            Subject = new ClaimsIdentity(new[] 
             { new Claim("userGUID", users.GUID.ToString()),
                 new Claim("systemRole", users.SystemRole),
                 new Claim("email", users.Email),
-                new Claim("userName", users.UserName),
+                usersFiles != null ? new Claim("selectedFileGUID", usersFiles.FileGUID.ToString()) : new Claim("selectedFileGUID", ""),
+                usersFiles != null ? new Claim("selectedFileRole", usersFiles.Role.ToString()) : new Claim("selectedFileRole", ""),
             }),
             Expires = DateTime.UtcNow.AddDays(7),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

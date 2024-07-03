@@ -16,16 +16,18 @@ public class UserServices
 {
     private readonly string _JWTsecret;
     private readonly JWTUtils _jwtUtils;
-    private readonly LoggingServices _loggingServiceses;
+    private readonly LoggingServices _loggingServices;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly SQLiteAsyncConnection _sqliteDb;
-    public UserServices(AppSettings appSettings, JWTUtils jwtUtils, LoggingServices loggingServiceses, IHttpContextAccessor httpContextAccessor, SQLiteAsyncConnection sqliteDb)
+    private readonly DBUtils _dbUtils;
+    public UserServices(AppSettings appSettings, JWTUtils jwtUtils, LoggingServices loggingServices, IHttpContextAccessor httpContextAccessor, SQLiteAsyncConnection sqliteDb, DBUtils dbUtils)
     {
         _JWTsecret = appSettings.JWTSecret;
         _jwtUtils = jwtUtils;
-        _loggingServiceses = loggingServiceses;
+        _loggingServices = loggingServices;
         _httpContextAccessor = httpContextAccessor;
         _sqliteDb = sqliteDb;
+        _dbUtils = dbUtils;
     }
     public async Task<GenericResponseData> Authenticate(AuthenticateRequestModel model)
     {
@@ -41,11 +43,11 @@ public class UserServices
             Data = null,
             Error = null
         };
-        if (user.IsEnabled == 0) { 
+        if (user.IsDeleted == 0) { 
             responseData.Success = false;
             responseData.Message = "User is disabled, please contact administration!";
             responseData.StatusCode = HttpStatusCode.Unauthorized;
-            _ = _loggingServiceses.AddLog(new LoggingDTO()
+            _ = _loggingServices.AddLog(new LoggingDTO()
             {
                 ActionType = ActionType.LoginFailed.ToString(),
                 Method = "Authenticate",
@@ -68,14 +70,25 @@ public class UserServices
         if (decryptedPassword.Equals(model.Password))
         {
             // TODO: Get all files associated with users
+            var userFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == user.GUID && uf.IsDeleted == 0).ToListAsync();
+            
+            // filter deleted file
+            var userFilesWithoutDeletedFiles = new List<UsersFiles>();
+            foreach (var userFile in userFiles)
+            {
+                var file = await _sqliteDb.Table<Files>().Where(f => f.GUID == userFile.FileGUID && f.IsDeleted == 0).FirstOrDefaultAsync();
+                if (file != null) userFilesWithoutDeletedFiles.Add(userFile);
+            }
+            // selectedUserFile
+            var selectedUserFile = userFilesWithoutDeletedFiles.FirstOrDefault(u => u.IsSelected != 0);
 
             // authentication successful so generate jwt token
-            var token = _jwtUtils.generateJwtToken(user);
+            var token = _jwtUtils.generateJwtToken(user, selectedUserFile);
             var response = new AuthenticateResponse(user, token);
             responseData.Data = response;
             responseData.Success = true;
             responseData.Message = "Login successfully !";
-            _ = _loggingServiceses.AddLog(new LoggingDTO()
+            _ = _loggingServices.AddLog(new LoggingDTO()
             {
                 ActionType = ActionType.LoginSuccess.ToString(),
                 Method = "Authenticate",
@@ -87,7 +100,7 @@ public class UserServices
             responseData.Success = false;
             responseData.Message = "Incorrect username or password!";
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            _ = _loggingServiceses.AddLog(new LoggingDTO()
+            _ = _loggingServices.AddLog(new LoggingDTO()
             {
                 ActionType = ActionType.LoginFailed.ToString(),
                 Method = "Authenticate",
