@@ -15,7 +15,7 @@ public class JWTUtils
     {
         _appSettings = appSettings;
     }
-    public string generateJwtToken(Users users, UsersFiles usersFiles)
+    public string generateJwtToken(Users users, UsersFiles? usersFiles)
     {
         // generate token that is valid for 7 days
         var tokenHandler = new JwtSecurityTokenHandler();
@@ -61,7 +61,7 @@ public class JWTUtils
             var userGUID = jwtToken.Claims.First(x => x.Type == "userGUID").Value;
 
             // attach user to context on successful jwt validation
-            context.Items["Users"] = userService.GetById(userGUID);
+            context.Items["Users"] = jwtToken.Claims;
         }
         catch (Exception ex)
         {

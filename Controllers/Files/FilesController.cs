@@ -12,10 +12,12 @@ namespace mypaperwork.Controllers.Files
     {
         private readonly AppSettings _appSettings;
         private FilesServices _filesServices;
-        public FilesController(AppSettings appSettings, FilesServices filesServices)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public FilesController(AppSettings appSettings, FilesServices filesServices, IHttpContextAccessor httpContextAccessor)
         {
             _appSettings = appSettings;
             _filesServices = filesServices;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("selectfile/{fileGUID}")]

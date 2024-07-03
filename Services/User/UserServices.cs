@@ -76,7 +76,7 @@ public class UserServices
             var userFilesWithoutDeletedFiles = new List<UsersFiles>();
             foreach (var userFile in userFiles)
             {
-                var file = await _sqliteDb.Table<Files>().Where(f => f.GUID == userFile.FileGUID && f.IsDeleted == 0).FirstOrDefaultAsync();
+                var file = await _sqliteDb.Table<Models.Database.Files>().Where(f => f.GUID == userFile.FileGUID && f.IsDeleted == 0).FirstOrDefaultAsync();
                 if (file != null) userFilesWithoutDeletedFiles.Add(userFile);
             }
             // selectedUserFile

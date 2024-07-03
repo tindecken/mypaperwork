@@ -8,13 +8,13 @@ using Serilog;
 using SQLite;
 
 namespace mypaperwork.Services.Testing;
-public class FilesServices
+public class TestingServices
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AppSettings _appSettings;
     private readonly LoggingServices _loggingServices;
     private readonly SQLiteAsyncConnection _sqliteDb;
-    public FilesServices(IHttpContextAccessor httpContextAccessor, AppSettings appSettings, LoggingServices loggingServices, SQLiteAsyncConnection sqliteDb)
+    public TestingServices(IHttpContextAccessor httpContextAccessor, AppSettings appSettings, LoggingServices loggingServices, SQLiteAsyncConnection sqliteDb)
     {
         _httpContextAccessor = httpContextAccessor;
         _appSettings = appSettings;
@@ -89,7 +89,7 @@ public class FilesServices
             await _sqliteDb.InsertAsync(newUser2);
 
             // create new file
-            var file = new Files()
+            var file = new Models.Database.Files()
             {
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Tindecken's File",
@@ -103,7 +103,8 @@ public class FilesServices
                 GUID = Guid.NewGuid().ToString(),
                 UserGUID = newUser.GUID.ToString(),
                 FileGUID = file.GUID.ToString(),
-                Role = "Admin"  
+                Role = "Admin",
+                IsSelected = 1,
             };
             await _sqliteDb.InsertAsync(newUserFile);
             // Associate user2 and file with role: USER
