@@ -17,13 +17,13 @@ public class JwtMiddleware
         _jwtUtils = jwtUtils;
     }
 
-    public async Task Invoke(HttpContext context, UserServices userService)
+    public async Task Invoke(HttpContext httpContext, UserServices userService)
     {
-        var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+        var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
         if (token != null)
-            _jwtUtils.attachUserToContext(context, userService, token);
+            _jwtUtils.attachUserToContext(httpContext, userService, token);
 
-        await _next(context);
+        await _next(httpContext);
     }
 }

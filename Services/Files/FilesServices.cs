@@ -17,6 +17,7 @@ public class FilesServices
     private readonly LoggingServices _loggingServices;
     private readonly SQLiteAsyncConnection _sqliteDb;
     private readonly HttpContextUtils _httpContextUtils;
+
     public FilesServices(HttpContextUtils httpContextUtils, AppSettings appSettings, LoggingServices loggingServices, SQLiteAsyncConnection sqliteDb)
     {
         _httpContextUtils = httpContextUtils;

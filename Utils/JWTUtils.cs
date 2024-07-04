@@ -58,10 +58,9 @@ public class JWTUtils
             }, out SecurityToken validatedToken);
 
             var jwtToken = (JwtSecurityToken)validatedToken;
-            var userGUID = jwtToken.Claims.First(x => x.Type == "userGUID").Value;
 
             // attach user to context on successful jwt validation
-            context.Items["Users"] = jwtToken.Claims;
+            context.Items["Token"] = jwtToken;
         }
         catch (Exception ex)
         {

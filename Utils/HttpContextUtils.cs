@@ -1,5 +1,7 @@
-﻿using mypaperwork.Models;
+﻿using Microsoft.AspNetCore.Authentication;
+using mypaperwork.Models;
 using mypaperwork.Models.Database;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace mypaperwork.Utils;
 
@@ -28,7 +30,13 @@ public class HttpContextUtils
     }
     public Token GetToken()
     {
-        var token = (Token)_httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Token")?.Value;
+        var token = new Token();
+        var tokenClaims = (JwtSecurityToken)_httpContextAccessor.HttpContext.Items["Token"];
+        token.userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
+        token.email = tokenClaims.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+        token.systemRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "systemRole")?.Value;
+        token.selectedFileGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileGUID")?.Value;
+        token.selectedFileRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileRole")?.Value;
         return token;
     }
 }

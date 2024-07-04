@@ -20,6 +20,7 @@ namespace mypaperwork.Controllers.Files
         }
 
         [HttpGet("selectfile/{fileGUID}")]
+        [Authorize]
         public async Task<IActionResult> SelectFile(string fileGUID)
         {
             var response = await _filesServices.SelectFile(fileGUID);
