@@ -1,0 +1,327 @@
+{
+	"info": {
+		"_postman_id": "6b4b3b49-ed0d-4a11-9321-bddef2047489",
+		"name": "Inventory Reconciliation Cycle Test-Scenarios - Cancel then create new reconciliation again",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3325740"
+	},
+	"item": [
+		{
+			"name": "01: Addition of 2 items to inventory",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"var uuid = require('uuid');\r",
+							"postman.setEnvironmentVariable('CurrentDateTime', moment().format('YYYY-MM-DD HH:mm'));\r",
+							"postman.setEnvironmentVariable('guid', uuid.v4());\r",
+							"postman.setEnvironmentVariable('InventoryMessageGUID', pm.environment.get('guid'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "biztalktestuser",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "M)C5$f5LC&V$HYA4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"inventory\": {\r\n        \"_version\": \"0.1\",\r\n        \"_docTypeId\": \"A69E280F-39B1-46FA-AE11-7D7DC23278A3\",\r\n        \"_messageContent\": \"inventory\",\r\n        \"_messageNameSpace\": \"http://Inbound.Schemas.IMP.Inventory.Creation\",\r\n        \"messageGuid\": \"{{guid}}\",\r\n        \"messageCreationDate\": \"{{CurrentDateTime}}\",\r\n        \"data\": [\r\n            {\r\n                \"rowNumber\": \"{{rowNumber1}}\",\r\n                \"partyGoodsOwner\": \"SUCSA\",\r\n                \"partyWarehouse\": \"PGSNV\",\r\n                \"partyTitleHolder\": \"FLPUS\",\r\n                \"partyAgent\": \"LDIUS\",\r\n                \"commodity\": \"soluble coffee\",\r\n                \"origin\": \"CI\",\r\n                \"articleDescription\": \"g\",\r\n                \"certification\": \"4c\",\r\n                \"goodsOwnersPurchaseReference\": \"SPCI-66857C\",\r\n                \"packageQuantity\": \"33\",\r\n                \"packageTypeSize\": \"4\",\r\n                \"packageType\": \"FB\",\r\n                \"shippedGrossWeight\": \"227\",\r\n                \"shippedNetWeight\": \"33\",\r\n                \"unitOfMeasure\": \"KG\",\r\n                \"landedGrossWeight\": \"99799999999.67777\",\r\n                \"landedNetWeight\": \"1\",\r\n                \"transportDocumentNumber\": \"5\",\r\n                \"transportDocumentDate\": \"2023-09-04\",\r\n                \"storageDate\": \"2023-09-04\",\r\n                \"warehouseCode\": \"PGSNV-CM01\",\r\n                \"fileNumber\": \"123\",\r\n                \"ceelNumber\": \"10987\",\r\n                \"warrantNumber\": \"123\",\r\n                \"containerNumber\": \"54645\",\r\n                \"icoMarkNumber\": \"5454\",\r\n                \"state\": \"SOUND\",\r\n                \"customStatus\": \"FREE GOODS\",\r\n                \"remarks\": \"22\"\r\n            },\r\n            {\r\n                \"rowNumber\": \"{{rowNumber2}}\",\r\n                \"partyGoodsOwner\": \"SUCSA\",\r\n                \"partyWarehouse\": \"PGSNV\",\r\n                \"partyTitleHolder\": \"FLPUS\",\r\n                \"partyAgent\": \"LDIUS\",\r\n                \"commodity\": \"soluble coffee\",\r\n                \"origin\": \"CI\",\r\n                \"articleDescription\": \"g\",\r\n                \"certification\": \"4c\",\r\n                \"goodsOwnersPurchaseReference\": \"SPCI-66857C\",\r\n                \"packageQuantity\": \"33\",\r\n                \"packageTypeSize\": \"4\",\r\n                \"packageType\": \"FB\",\r\n                \"shippedGrossWeight\": \"227\",\r\n                \"shippedNetWeight\": \"33\",\r\n                \"unitOfMeasure\": \"KG\",\r\n                \"landedGrossWeight\": \"99799999999.67777\",\r\n                \"landedNetWeight\": \"1\",\r\n                \"transportDocumentNumber\": \"5\",\r\n                \"transportDocumentDate\": \"2023-09-04\",\r\n                \"storageDate\": \"2023-09-04\",\r\n                \"warehouseCode\": \"PGSNV-CM01\",\r\n                \"fileNumber\": \"123\",\r\n                \"ceelNumber\": \"10987\",\r\n                \"warrantNumber\": \"123\",\r\n                \"containerNumber\": \"54645\",\r\n                \"icoMarkNumber\": \"5454\",\r\n                \"state\": \"SOUND\",\r\n                \"customStatus\": \"FREE GOODS\",\r\n                \"remarks\": \"22\"\r\n            }\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://uat.stockk.org/v1/inbound_web/RestService.svc",
+					"protocol": "https",
+					"host": [
+						"uat",
+						"stockk",
+						"org"
+					],
+					"path": [
+						"v1",
+						"inbound_web",
+						"RestService.svc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02: Update status of 2 above inventories to 3 (Approval)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"postman.setEnvironmentVariable('CurrentDateTime', moment().format('YYYY-MM-DD HH:mm'));\r",
+							"\r",
+							"var uuid = require('uuid');\r",
+							"postman.setEnvironmentVariable('messageGuid_inventoryStatus', uuid.v4());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "biztalktestuser",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "M)C5$f5LC&V$HYA4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"inventoryStatus\": {\r\n        \"_version\": \"0.1\",\r\n        \"_docTypeId\": \"77aa3b64-e513-4295-8677-42c47be28808\",\r\n        \"_messageContent\": \"inventoryStatus\",\r\n        \"_messageNameSpace\": \"http://Inbound.Schemas.IMP.InventoryStatus.Update\",\r\n        \"messageGuid\": \"{{messageGuid_inventoryStatus}}\",\r\n        \"messageCreationDate\": \"{{CurrentDateTime}}\",\r\n        \"data\": [\r\n            {\r\n                \"rowNumber\": \"{{rowNumber1}}\",\r\n                \"stageId\": \"3\",\r\n                \"messageGuid\": \"{{InventoryMessageGUID}}\",\r\n                \"packageQuantity\": 360,\r\n                \"landedGrossWeight\": 22600,\r\n                \"landedNetWeight\": 22580,\r\n                \"ceelNumber\": \"104490\"\r\n            },\r\n            {\r\n                \"rowNumber\": \"{{rowNumber2}}\",\r\n                \"stageId\": \"3\",\r\n                \"messageGuid\": \"{{InventoryMessageGUID}}\",\r\n                \"packageQuantity\": 360,\r\n                \"landedGrossWeight\": 22600,\r\n                \"landedNetWeight\": 22580,\r\n                \"ceelNumber\": \"104490\"\r\n            }\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://uat.stockk.org/v1/inbound_web/RestService.svc",
+					"protocol": "https",
+					"host": [
+						"uat",
+						"stockk",
+						"org"
+					],
+					"path": [
+						"v1",
+						"inbound_web",
+						"RestService.svc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03-Creation of new recon session with 1 item to Reconciliation Session,status=submitted",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"var uuid = require('uuid');\r",
+							"postman.setEnvironmentVariable('guid', uuid.v4());\r",
+							"postman.setEnvironmentVariable('CurrentDateTime', moment().format('YYYY-MM-DD HH:mm'));\r",
+							"postman.setEnvironmentVariable('reconciliationSessionMessageGuid1', '');\r",
+							"postman.setEnvironmentVariable('reconciliationSessionMessageGuid1', pm.environment.get('guid'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "biztalktestuser",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "M)C5$f5LC&V$HYA4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"reconciliationSession\": {\r\n    \"_docTypeId\": \"41AE3EF0-62B8-4EAA-8E14-089C3F7ADE81\",\r\n    \"_messageContent\": \"reconciliationSession\",\r\n    \"_messageNameSpace\": \"http://Inbound.Schemas.IMP.Reconciliation.Creation\",\r\n    \"messageCreationDate\": \"{{CurrentDateTime}}\",\r\n    \"messageGuid\": \"{{guid}}\",\r\n    \"_version\": \"0.1\",\r\n    \"data\": {\r\n     \"openingDate\": \"2024-03-06\",\r\n      \"partyGoodsOwner\": \"SUCSA\",\r\n      \"partyTitleHolder\": null,\r\n      \"partyWarehouse\": \"PGSNV\",\r\n      \"status\": \"submitted\",\r\n      \"approvalDate\": \"\",\r\n      \"comment\": null,\r\n      \"details\": [\r\n        {\r\n          \"articleDescription\": \"g\",\r\n          \"availabilityStatus\": null,\r\n          \"ceelNumber\": \"104582\",\r\n          \"ceelNumberOriginal\": \"104582\",\r\n          \"certification\": \"FTOU\",\r\n          \"comment1\": null,\r\n          \"comment1Original\": null,\r\n          \"comment2\": null,\r\n          \"comment2Original\": null,\r\n          \"commodity\": \"SOLUBLE COFFEE\",\r\n          \"containerNumber\": \"54645\",\r\n          \"customStatus\": \"FREE GOODS\",\r\n          \"fileNumber\": \"2310\",\r\n          \"goodsOwnersPurchaseReference\": \"444\",\r\n          \"icoMarkNumber\": \"5454\",\r\n          \"id\": \"7039a301-a900-4fa1-aca0-03b43891ae76\",\r\n          \"inventoryMessageGuid\": \"{{InventoryMessageGUID}}\",\r\n          \"isSelectable\": \"true\",\r\n          \"landedGrossWeight\": 19.49,\r\n          \"landedGrossWeightOriginal\": 19.49,\r\n          \"landedNetWeight\": 15.0,\r\n          \"landedNetWeightOriginal\": 15.0,\r\n          \"origin\": \"CI\",\r\n          \"packageQuantity\": 4,\r\n          \"packageQuantityOriginal\": 0,\r\n          \"packageType\": \"FB\",\r\n          \"packageTypeSize\": 0,\r\n          \"partyAgent\": \"LDIUS\",\r\n          \"partyGoodsOwner\": \"SUCSA\",\r\n          \"partyTitleHolder\": null,\r\n          \"partyWarehouse\": \"PGSNV\",\r\n          \"reconciliationStatus\": \"Submitted\",\r\n          \"remarks\": \"22\",\r\n          \"rowNumber\": \"{{rowNumber1}}\",\r\n          \"shippedGrossWeight\": 113.0,\r\n          \"shippedNetWeight\": 66.0,\r\n          \"state\": \"SOUND\",\r\n          \"storageDate\": \"0001-01-01\",\r\n          \"transportDocumentDate\": \"2023-09-04\",\r\n          \"transportDocumentNumber\": 2,\r\n          \"unitOfMeasure\": \"KG\",\r\n          \"warehouseCode\": \"PGSNV-CM01\",\r\n          \"warrantNumber\": \"777\"\r\n        }\r\n      ]\r\n    }\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://uat.stockk.org/v1/inbound_web/RestService.svc",
+					"protocol": "https",
+					"host": [
+						"uat",
+						"stockk",
+						"org"
+					],
+					"path": [
+						"v1",
+						"inbound_web",
+						"RestService.svc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04-Cancel Reconciliation Session using Action API All Items",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"pm.globals.set('CurrentDateTime', moment().format('YYYY-MM-DD HH:mm'));\r",
+							"var uuid = require('uuid');\r",
+							"postman.setEnvironmentVariable('guid', uuid.v4());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "biztalktestuser",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "M)C5$f5LC&V$HYA4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"reconciliationSession\": {\r\n        \"_version\": \"0.1\",\r\n        \"_docTypeId\": \"956c1fcc-e23e-436e-b240-0040db73f111\",\r\n        \"_messageContent\": \"reconciliationSession\",\r\n        \"_messageNameSpace\": \"http://Inbound.Schemas.IMP.Reconciliation.Creation\",\r\n        \"messageGuid\": \"{{guid}}\",\r\n        \"messageCreationDate\": \"{{CurrentDateTime}}\",\r\n        \"data\": {\r\n            \"openingDate\": \"2023-12-12\",\r\n            \"approvalDate\": \"2023-12-12\",\r\n            \"partyWarehouse\": \"RPMNJ\",\r\n            \"partyGoodsOwner\": \"SUCSA\",\r\n            \"partyTitleHolder\": \"FLPUS\",\r\n            \"status\": \"Cancelled\",\r\n            \"comment\": \"Test to cancel\",\r\n            \"reconciliationSessionMessageGuid\": \"{{reconciliationSessionMessageGuid1}}\",\r\n            \"details\": [\r\n                {\r\n                    \"comment2\": \"\",\r\n                    \"inventoryMessageGuid\": \"{{InventoryMessageGUID}}\",\r\n                    \"rowNumber\": \"{{rowNumber1}}\",\r\n                    \"partyGoodsOwner\": \"SUCSA\",\r\n                    \"partyWarehouse\": \"PGSNV\",\r\n                    \"partyTitleHolder\": \"FLPUS\",\r\n                    \"partyAgent\": \"LDIUS\",\r\n                    \"commodity\": \"COFFEE ROASTED AND GROUND\",\r\n                    \"origin\": \"BY\",\r\n                    \"articleDescription\": \"SPBR-74697 - 36RCK COFFEE 2\",\r\n                    \"certification\": \"4c\",\r\n                    \"goodsOwnersPurchaseReference\": \"gggg\",\r\n                    \"packageQuantity\": \"99999\",\r\n                    \"packageTypeSize\": 70,\r\n                    \"packageType\": \"FB\",\r\n                    \"shippedGrossWeight\": \"11111\",\r\n                    \"shippedNetWeight\": \"1212\",\r\n                    \"unitOfMeasure\": \"KG\",\r\n                    \"landedGrossWeight\": \"12345678900\",\r\n                    \"landedNetWeight\": \"15\",\r\n                    \"transportDocumentNumber\": \"4\",\r\n                    \"transportDocumentDate\": \"2023-10-27\",\r\n                    \"storageDate\": \"2023-10-30\",\r\n                    \"warehouseCode\": \"VOLTrieste\",\r\n                    \"fileNumber\": \"9\",\r\n                    \"ceelNumber\": \"123\",\r\n                    \"warrantNumber\": \"Z7755HJ825\",\r\n                    \"containerNumber\": \"HBXU 3005343\",\r\n                    \"icoMarkNumber\": \"002/1191/2257\",\r\n                    \"state\": \"stain\",\r\n                    \"customStatus\": \"FREE GOODS\",\r\n                    \"remarks\": \"IN 22 BB 2\",\r\n                    \"comment1\": \"TEST\",\r\n                    \"reconciliationStatus\": \"Cancelled\",\r\n                    \"isSelectable\": \"true\"\r\n                }\r\n            ]\r\n        }\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://uat.stockk.org/v1/inbound_web/RestService.svc",
+					"protocol": "https",
+					"host": [
+						"uat",
+						"stockk",
+						"org"
+					],
+					"path": [
+						"v1",
+						"inbound_web",
+						"RestService.svc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "05-Creation of new recon session with 1 item to Reconciliation Session,status=submitted Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var moment = require('moment');\r",
+							"var uuid = require('uuid');\r",
+							"postman.setEnvironmentVariable('guid', uuid.v4());\r",
+							"postman.setEnvironmentVariable('CurrentDateTime', moment().format('YYYY-MM-DD HH:mm'));\r",
+							"postman.setEnvironmentVariable('reconciliationSessionMessageGuid1', '');\r",
+							"postman.setEnvironmentVariable('reconciliationSessionMessageGuid1', pm.environment.get('guid'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "biztalktestuser",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "M)C5$f5LC&V$HYA4",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"reconciliationSession\": {\r\n    \"_docTypeId\": \"41AE3EF0-62B8-4EAA-8E14-089C3F7ADE81\",\r\n    \"_messageContent\": \"reconciliationSession\",\r\n    \"_messageNameSpace\": \"http://Inbound.Schemas.IMP.Reconciliation.Creation\",\r\n    \"messageCreationDate\": \"{{CurrentDateTime}}\",\r\n    \"messageGuid\": \"{{guid}}\",\r\n    \"_version\": \"0.1\",\r\n    \"data\": {\r\n     \"openingDate\": \"2024-03-06\",\r\n      \"partyGoodsOwner\": \"SUCSA\",\r\n      \"partyTitleHolder\": null,\r\n      \"partyWarehouse\": \"PGSNV\",\r\n      \"status\": \"submitted\",\r\n      \"approvalDate\": \"\",\r\n      \"comment\": null,\r\n      \"details\": [\r\n        {\r\n          \"articleDescription\": \"g\",\r\n          \"availabilityStatus\": null,\r\n          \"ceelNumber\": \"104582\",\r\n          \"ceelNumberOriginal\": \"104582\",\r\n          \"certification\": \"FTOU\",\r\n          \"comment1\": null,\r\n          \"comment1Original\": null,\r\n          \"comment2\": null,\r\n          \"comment2Original\": null,\r\n          \"commodity\": \"SOLUBLE COFFEE\",\r\n          \"containerNumber\": \"54645\",\r\n          \"customStatus\": \"FREE GOODS\",\r\n          \"fileNumber\": \"2310\",\r\n          \"goodsOwnersPurchaseReference\": \"444\",\r\n          \"icoMarkNumber\": \"5454\",\r\n          \"id\": \"7039a301-a900-4fa1-aca0-03b43891ae76\",\r\n          \"inventoryMessageGuid\": \"{{InventoryMessageGUID}}\",\r\n          \"isSelectable\": \"true\",\r\n          \"landedGrossWeight\": 19.49,\r\n          \"landedGrossWeightOriginal\": 19.49,\r\n          \"landedNetWeight\": 15.0,\r\n          \"landedNetWeightOriginal\": 15.0,\r\n          \"origin\": \"CI\",\r\n          \"packageQuantity\": 4,\r\n          \"packageQuantityOriginal\": 0,\r\n          \"packageType\": \"FB\",\r\n          \"packageTypeSize\": 0,\r\n          \"partyAgent\": \"LDIUS\",\r\n          \"partyGoodsOwner\": \"SUCSA\",\r\n          \"partyTitleHolder\": null,\r\n          \"partyWarehouse\": \"PGSNV\",\r\n          \"reconciliationStatus\": \"Submitted\",\r\n          \"remarks\": \"22\",\r\n          \"rowNumber\": \"{{rowNumber1}}\",\r\n          \"shippedGrossWeight\": 113.0,\r\n          \"shippedNetWeight\": 66.0,\r\n          \"state\": \"SOUND\",\r\n          \"storageDate\": \"0001-01-01\",\r\n          \"transportDocumentDate\": \"2023-09-04\",\r\n          \"transportDocumentNumber\": 2,\r\n          \"unitOfMeasure\": \"KG\",\r\n          \"warehouseCode\": \"PGSNV-CM01\",\r\n          \"warrantNumber\": \"777\"\r\n        }\r\n      ]\r\n    }\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://uat.stockk.org/v1/inbound_web/RestService.svc",
+					"protocol": "https",
+					"host": [
+						"uat",
+						"stockk",
+						"org"
+					],
+					"path": [
+						"v1",
+						"inbound_web",
+						"RestService.svc"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

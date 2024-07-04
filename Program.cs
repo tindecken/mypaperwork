@@ -51,6 +51,7 @@ builder.Services.AddTransient<LoggingServices>();
 builder.Services.AddTransient<FilesServices>();
 builder.Services.AddTransient<TestingServices>();
 builder.Services.AddTransient<DocumentServices>();
+builder.Services.AddTransient<HttpContextUtils>();
 
 var app = builder.Build();
 app.UseMiddleware<EnableRequestRewindMiddleware>();

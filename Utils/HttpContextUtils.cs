@@ -1,4 +1,5 @@
-﻿using mypaperwork.Models.Database;
+﻿using mypaperwork.Models;
+using mypaperwork.Models.Database;
 
 namespace mypaperwork.Utils;
 
@@ -24,5 +25,10 @@ public class HttpContextUtils
             _httpContextAccessor.HttpContext?.Request.Headers["ClientIP"].ToString() :
             _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.MapToIPv4().ToString();
         return ipAddress;
+    }
+    public Token GetToken()
+    {
+        var token = (Token)_httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(c => c.Type == "Token")?.Value;
+        return token;
     }
 }
