@@ -243,14 +243,4 @@ public class UserServices
         
         return responseData;
     }
-
-    public Users GetById(string id)
-    {
-        // TODO: Implement GetById
-        return new Users()
-        {
-
-        };
-        //return _dbContext.Users.FirstOrDefault(u => u.Id.ToString() == id);
-    }
 }
