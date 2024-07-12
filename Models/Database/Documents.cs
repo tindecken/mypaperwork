@@ -10,7 +10,7 @@ namespace mypaperwork.Models.Database
         public string PaperWorkGUID { get; set; }
         public string FileName { get; set; }
         public decimal FileSize { get; set; }
-        public string CreatedDate { get; set; } = DateTime.Now.ToString("u");
+        public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");
         public string? CreatedBy { get; set; }
         public int IsDeleted { get; set; } = 0;
     }

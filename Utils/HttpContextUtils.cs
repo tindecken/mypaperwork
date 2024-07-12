@@ -13,19 +13,7 @@ public class HttpContextUtils
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string getUserGUID()
-    {
-        var userGUID = string.Empty;
-        var tokenClaims = (JwtSecurityToken)_httpContextAccessor.HttpContext.Items["Token"];
-        if (tokenClaims != null)
-        {
-            userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
-        }
-
-        return userGUID;
-    }
-
-    public string getClientIPAddress()
+    public string GetClientIPAddress()
     {
         var ipAddress = _httpContextAccessor.HttpContext.Request.Headers.Keys.Contains("ClientIP") ?
             _httpContextAccessor.HttpContext?.Request.Headers["ClientIP"].ToString() :
@@ -42,5 +30,22 @@ public class HttpContextUtils
         token.selectedFileGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileGUID")?.Value;
         token.selectedFileRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileRole")?.Value;
         return token;
+    }
+
+    public string? GetUserGUID()
+    {
+        var userGUID = string.Empty;
+        var tokenClaims = (JwtSecurityToken)_httpContextAccessor.HttpContext.Items["Token"];
+        if (tokenClaims == null) return null;
+        userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
+        return userGUID;
+    }
+    public string? GetSelectedFileGUID()
+    {
+        var fileGUID = string.Empty;
+        var tokenClaims = (JwtSecurityToken)_httpContextAccessor.HttpContext.Items["Token"];
+        if (tokenClaims == null) return null;
+        fileGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileGUID")?.Value;
+        return fileGUID;
     }
 }

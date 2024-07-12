@@ -7,7 +7,7 @@ using mypaperwork.Utils;
 using SQLite;
 
 namespace mypaperwork.Services.File;
-public class FilesServices
+public class FileServices
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AppSettings _appSettings;
@@ -17,7 +17,7 @@ public class FilesServices
     private readonly DBUtils _dbUtils;
     private readonly JWTUtils _jwtUtils;
 
-    public FilesServices(HttpContextUtils httpContextUtils, AppSettings appSettings, LoggingServices loggingServices, SQLiteAsyncConnection sqliteDb, DBUtils dbUtils, JWTUtils jwtUtils)
+    public FileServices(HttpContextUtils httpContextUtils, AppSettings appSettings, LoggingServices loggingServices, SQLiteAsyncConnection sqliteDb, DBUtils dbUtils, JWTUtils jwtUtils)
     {
         _httpContextUtils = httpContextUtils;
         _appSettings = appSettings;

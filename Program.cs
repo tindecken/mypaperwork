@@ -8,8 +8,9 @@ using mypaperwork.Services.User;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using mypaperwork.Services.Testing;
 using mypaperwork.Models.Database;
+using mypaperwork.Services.Category;
 using mypaperwork.Services.Document;
-using mypaperwork.Services.Files;
+using mypaperwork.Services.File;
 using SQLite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,6 +50,7 @@ builder.Services.AddTransient<DBUtils>();
 builder.Services.AddTransient<UserServices>();
 builder.Services.AddTransient<LoggingServices>();
 builder.Services.AddTransient<CategoryServices>();
+builder.Services.AddTransient<FileServices>();
 builder.Services.AddTransient<TestingServices>();
 builder.Services.AddTransient<DocumentServices>();
 builder.Services.AddTransient<HttpContextUtils>();

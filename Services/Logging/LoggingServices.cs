@@ -24,8 +24,8 @@ public class LoggingServices
         var responseData = new GenericResponseData();
 
         var httpContextUtils = new HttpContextUtils(_httpContextAccessor);
-        var userGUID = httpContextUtils.getUserGUID();
-        var ipAddress = httpContextUtils.getClientIPAddress();
+        var userGUID = httpContextUtils.GetUserGUID();
+        var ipAddress = httpContextUtils.GetClientIPAddress();
         var logging = new Logs()
         {
             GUID = Guid.NewGuid().ToString(),

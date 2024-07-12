@@ -12,7 +12,7 @@ namespace mypaperwork.Models.Database
         public string? IssuedDate { get; set; }
         public decimal? Price { get; set; }
         public string? PriceCurrency { get; set; }
-        public string CreatedDate { get; set; } = DateTime.Now.ToString("u");
+        public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");
         public string? CreatedBy { get; set; }
         public string? UpdatedDate { get; set; }
         public string? UpdatedBy { get; set; }

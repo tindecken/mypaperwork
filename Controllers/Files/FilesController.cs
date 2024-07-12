@@ -10,18 +10,18 @@ namespace mypaperwork.Controllers.Files
     public class CategoriesController : TransformResponse
     {
         private readonly AppSettings _appSettings;
-        private FilesServices _filesServices;
-        public CategoriesController(AppSettings appSettings, FilesServices filesServices, HttpContextUtils httpContextUtils)
+        private FileServices _fileServices;
+        public CategoriesController(AppSettings appSettings, FileServices fileServices, HttpContextUtils httpContextUtils)
         {
             _appSettings = appSettings;
-            _filesServices = filesServices;
+            _fileServices = fileServices;
         }
 
         [HttpGet("selectfile/{fileGUID}")]
         [Authorize]
         public async Task<IActionResult> SelectFile(string fileGUID)
         {
-            var response = await _filesServices.SelectFile(fileGUID);
+            var response = await _fileServices.SelectFile(fileGUID);
             
             return Transform(response);
         }
