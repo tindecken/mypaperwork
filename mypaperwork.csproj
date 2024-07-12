@@ -28,4 +28,10 @@
     <Folder Include="Controllers\Logs\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="mypaperworkDB.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -16,8 +16,12 @@ public class HttpContextUtils
     public string getUserGUID()
     {
         var userGUID = string.Empty;
-        var user = (Users)_httpContextAccessor.HttpContext.Items["Users"];
-        if (user != null) userGUID = user.GUID;
+        var tokenClaims = (JwtSecurityToken)_httpContextAccessor.HttpContext.Items["Token"];
+        if (tokenClaims != null)
+        {
+            userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
+        }
+
         return userGUID;
     }
 

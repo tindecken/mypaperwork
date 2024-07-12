@@ -34,7 +34,7 @@ public class LoggingServices
             Message = loggingDTO.Message,
             OldData = loggingDTO.OldData,
             NewData = loggingDTO.NewData,
-            ActionBy = userGUID,
+            ActionBy = string.IsNullOrEmpty(userGUID) ? "Not specified" : userGUID,
             IPAddress = ipAddress
         };
         await _sqliteDb.InsertAsync(logging);

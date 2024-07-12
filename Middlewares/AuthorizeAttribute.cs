@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 using mypaperwork.Models;
 using mypaperwork.Models.Database;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AuthorizeAttribute : Attribute, IAuthorizationFilter
@@ -14,42 +15,45 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
     }
     public void OnAuthorization(AuthorizationFilterContext context)
     {
+        var responseData = new GenericResponseData();
         // skip authorization if action has an [AllowAnonymous] attribute
         var allowAnonymous = context.ActionDescriptor.EndpointMetadata.OfType<AllowAnonymousAttribute>().Any();
         if (allowAnonymous) return;
         
         // authorize based on user role
-        
         var tokenClaims = (JwtSecurityToken)context.HttpContext.Items["Token"];
-        var userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
-        if (string.IsNullOrEmpty(userGUID)) {
-            context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
-        } else { 
-            // check token is expired or not
-            var tokenExp = tokenClaims.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-            var tokenDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(tokenExp)).UtcDateTime;
-            var now = DateTime.Now.ToUniversalTime();
-            var isExpired =  now > tokenDate;
-            if (isExpired)
+        if (tokenClaims == null)
+        {
+            responseData.Success = false;
+            responseData.Message = "Invalid token or expired";
+            responseData.StatusCode = HttpStatusCode.Unauthorized;
+            context.Result = new JsonResult(responseData) { StatusCode = StatusCodes.Status401Unauthorized };
+        }
+        else
+        {
+            var userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
+            UserRole currentUserRole;
+            if (string.IsNullOrEmpty(userGUID))
             {
-                context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
-            } else { 
-                UserRole currentUserRole;
+                responseData.Success = false;
+                responseData.Message = "Unauthorized";
+                responseData.StatusCode = HttpStatusCode.Unauthorized;
+                context.Result = new JsonResult(responseData) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
+            else
+            {
+                // check user role
                 var systemRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "systemRole")?.Value;
-                if (string.IsNullOrEmpty(systemRole))
+                bool isUserRoleInRoleList = Enum.TryParse(systemRole, out currentUserRole) && _userRoles.Contains(currentUserRole);
+                var a = _userRoles.Any();
+                if (_userRoles.Any() && !isUserRoleInRoleList)
                 {
-                    context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
-                }
-                else
-                {
-                    bool isUserRoleInRoleList = Enum.TryParse(systemRole, out currentUserRole) && _userRoles.Contains(currentUserRole);
-                    if (_userRoles.Any() && !isUserRoleInRoleList)
-                    {
-                        context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
-                    }
+                    responseData.Success = false;
+                    responseData.Message = "Forbidden";
+                    responseData.StatusCode = HttpStatusCode.Forbidden;
+                    context.Result = new JsonResult(responseData) { StatusCode = StatusCodes.Status403Forbidden };
                 }
             }
         }
-        
     }
 }
