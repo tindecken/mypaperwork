@@ -19,19 +19,37 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         if (allowAnonymous) return;
         
         // authorize based on user role
+        
         var tokenClaims = (JwtSecurityToken)context.HttpContext.Items["Token"];
-        UserRole currentUserRole;
-        if (user == null)
-        {
+        var userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
+        if (string.IsNullOrEmpty(userGUID)) {
             context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
-        }
-        else
-        {
-            bool isUserRoleInRoleList = Enum.TryParse(user.SystemRole, out currentUserRole) && _userRoles.Contains(currentUserRole);
-            if (_userRoles.Any() && !isUserRoleInRoleList)
+        } else { 
+            // check token is expired or not
+            var tokenExp = tokenClaims.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
+            var tokenDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(tokenExp)).UtcDateTime;
+            var now = DateTime.Now.ToUniversalTime();
+            var isExpired =  now > tokenDate;
+            if (isExpired)
             {
                 context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
+            } else { 
+                UserRole currentUserRole;
+                var systemRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "systemRole")?.Value;
+                if (string.IsNullOrEmpty(systemRole))
+                {
+                    context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
+                }
+                else
+                {
+                    bool isUserRoleInRoleList = Enum.TryParse(systemRole, out currentUserRole) && _userRoles.Contains(currentUserRole);
+                    if (_userRoles.Any() && !isUserRoleInRoleList)
+                    {
+                        context.Result = new JsonResult(new { message = "Unauthorized" }) { StatusCode = StatusCodes.Status401Unauthorized };
+                    }
+                }
             }
         }
+        
     }
 }

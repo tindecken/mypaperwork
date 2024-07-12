@@ -89,7 +89,7 @@ public class TestingServices
             await _sqliteDb.InsertAsync(newUser2);
 
             // create new file
-            var file = new Models.Database.Files()
+            var file = new Models.Database.FilesDBModel()
             {
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Tindecken's File",

@@ -37,7 +37,7 @@ var appSettings = builder.Services.BuildServiceProvider().GetService<AppSettings
 var sqliteDB = new SQLiteAsyncConnection(Path.Combine(Directory.GetCurrentDirectory(), appSettings.SQLiteDBPath));
 await sqliteDB.CreateTableAsync<Logs>();
 await sqliteDB.CreateTableAsync<Users>();
-await sqliteDB.CreateTableAsync<Files>();
+await sqliteDB.CreateTableAsync<FilesDBModel>();
 await sqliteDB.CreateTableAsync<UsersFiles>();
 await sqliteDB.CreateTableAsync<Categories>();
 await sqliteDB.CreateTableAsync<PaperWorks>();

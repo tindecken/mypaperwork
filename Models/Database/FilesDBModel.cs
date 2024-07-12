@@ -3,7 +3,7 @@
 namespace mypaperwork.Models.Database
 {
     [Table("Files")]
-    public class Files
+    public class FilesDBModel
     {
         [PrimaryKey]
         public string GUID { get; set; }

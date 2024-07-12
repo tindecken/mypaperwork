@@ -14,15 +14,15 @@ public class DBUtils
     }
     public async Task SetSelectedFileAsync(string userGUID, string fileGUID)
     {
-        var users = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.IsDeleted == 0).ToListAsync();
-        if (users.Count > 0)
+        var usersFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.IsDeleted == 0).ToListAsync();
+        if (usersFiles.Count > 0)
         {
-            foreach (var user in users)
+            foreach (var user in usersFiles)
             {
                 user.IsSelected = 0;
                 await _sqliteDb.UpdateAsync(user);
             }   
-            var userFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.FileGUID == fileGUID).FirstOrDefaultAsync();
+            var userFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.FileGUID == fileGUID).FirstOrDefaultAsync();
             if (userFile != null)
             {
                 userFile.IsSelected = 1;
@@ -30,5 +30,14 @@ public class DBUtils
             }
         }
         
+    }
+    public async Task<string?> GetSelectedUsersFilesGUID(string userGUID, string fileGUID)
+    {
+        var selectedUserFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.IsDeleted == 0 && uf.FileGUID == fileGUID).FirstOrDefaultAsync();
+        if (selectedUserFile != null)
+        {
+            return selectedUserFile.FileGUID;
+        }
+        else return null;
     }
 }
