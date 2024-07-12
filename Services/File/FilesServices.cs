@@ -1,11 +1,12 @@
 ﻿using System.Net;
 using mypaperwork.Models;
+using mypaperwork.Models.Authentication;
 using mypaperwork.Models.Database;
 using mypaperwork.Services.Logging;
 using mypaperwork.Utils;
 using SQLite;
 
-namespace mypaperwork.Services.Files;
+namespace mypaperwork.Services.File;
 public class FilesServices
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -14,14 +15,16 @@ public class FilesServices
     private readonly SQLiteAsyncConnection _sqliteDb;
     private readonly HttpContextUtils _httpContextUtils;
     private readonly DBUtils _dbUtils;
+    private readonly JWTUtils _jwtUtils;
 
-    public FilesServices(HttpContextUtils httpContextUtils, AppSettings appSettings, LoggingServices loggingServices, SQLiteAsyncConnection sqliteDb, DBUtils dbUtils)
+    public FilesServices(HttpContextUtils httpContextUtils, AppSettings appSettings, LoggingServices loggingServices, SQLiteAsyncConnection sqliteDb, DBUtils dbUtils, JWTUtils jwtUtils)
     {
         _httpContextUtils = httpContextUtils;
         _appSettings = appSettings;
         _loggingServices = loggingServices;
         _sqliteDb = sqliteDb;
         _dbUtils = dbUtils;
+        _jwtUtils = jwtUtils;
     }
 
     public async Task<GenericResponseData> SelectFile(string fileGUID)
@@ -44,10 +47,15 @@ public class FilesServices
             return responseData;
         }
         await _dbUtils.SetSelectedFileAsync(userGUID, fileGUID);
-        
+        var user = await _sqliteDb.Table<Users>().Where(u => u.GUID == userGUID).FirstOrDefaultAsync();
+        var selectedUserFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.FileGUID == fileGUID).FirstOrDefaultAsync();
+        // Regenerate token
+        var reGeneratedtoken = _jwtUtils.generateJwtToken(user, selectedUserFile);
+        var response = new AuthenticateResponse(user, reGeneratedtoken);
+        responseData.Data = response;
         responseData.StatusCode = HttpStatusCode.OK;
-        responseData.Message = $"Select file {file.Name} successfully.";
-        responseData.Data = null;
+        responseData.Message = $"Select file: {file.Name} successfully.";
+        responseData.Data = reGeneratedtoken;
         responseData.Success = true;
         return responseData;
     }
