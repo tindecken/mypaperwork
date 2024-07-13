@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
+using mypaperwork.Models;
 using mypaperwork.Models.Categories;
 using mypaperwork.Services.Category;
 using mypaperwork.Services.User;
@@ -33,6 +34,13 @@ namespace mypaperwork.Controllers.Categories
         {
             var response = await _categoryServices.UpdateCategory(categoryRequestModel);
 
+            return Transform(response);
+        }
+        [HttpDelete("delete/{categoryGUID}")]
+        [Authorize(UserRole.Admin)]
+        public async Task<IActionResult> DeleteCategory(string categoryGUID)
+        {
+            var response = await _categoryServices.DeleteCategory(categoryGUID);
             return Transform(response);
         }
     }

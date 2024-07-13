@@ -31,8 +31,8 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         }
         else
         {
+            // if userGUID == null, user is not logged in --> return Unauthorized
             var userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
-            UserRole currentUserRole;
             if (string.IsNullOrEmpty(userGUID))
             {
                 responseData.Success = false;
@@ -42,17 +42,23 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
             }
             else
             {
-                // check user role
+                var userRequireRoles = context.ActionDescriptor.EndpointMetadata.OfType<AuthorizeAttribute>()
+                    .SelectMany(x => x._userRoles);
+                if (!userRequireRoles.Any()) return;
+                // get current user sytemRole
                 var systemRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "systemRole")?.Value;
-                bool isUserRoleInRoleList = Enum.TryParse(systemRole, out currentUserRole) && _userRoles.Contains(currentUserRole);
-                var a = _userRoles.Any();
-                if (_userRoles.Any() && !isUserRoleInRoleList)
-                {
-                    responseData.Success = false;
-                    responseData.Message = "Forbidden";
-                    responseData.StatusCode = HttpStatusCode.Forbidden;
-                    context.Result = new JsonResult(responseData) { StatusCode = StatusCodes.Status403Forbidden };
-                }
+                UserRole currentUserRole;
+                bool isSystemRoleInRoleList = Enum.TryParse(systemRole, out currentUserRole) && userRequireRoles.Contains(currentUserRole);
+                if (isSystemRoleInRoleList) return;
+                // get current user selectedFileRole
+                var selectedFileRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileRole")?.Value;
+                bool isSelectedFileRoleInRoleList = Enum.TryParse(selectedFileRole, out currentUserRole) && userRequireRoles.Contains(currentUserRole);
+                if (isSelectedFileRoleInRoleList) return; 
+
+                responseData.Success = false;
+                responseData.Message = "Forbidden - Require role(s): " + string.Join(", ", userRequireRoles) + " but systemRole: " + systemRole + " or selectedFileRole: " + selectedFileRole;
+                responseData.StatusCode = HttpStatusCode.Forbidden;
+                context.Result = new JsonResult(responseData) { StatusCode = StatusCodes.Status403Forbidden };
             }
         }
     }

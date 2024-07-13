@@ -77,6 +77,13 @@ public class CategoryServices
         }
 
         // check file is exist
+        var file = await _sqliteDb.Table<Categories>().Where(c => c.FileGUID == selectedFileGUID).FirstOrDefaultAsync();
+        if (file == null)
+        {
+            responseData.StatusCode = HttpStatusCode.NotFound;
+            responseData.Message = $"File {selectedFileGUID} not found";
+            return responseData;
+        }
         var category = await _sqliteDb.Table<Categories>().Where(c => c.GUID == cat.GUID && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
         if (category == null)
         {
@@ -111,30 +118,29 @@ public class CategoryServices
             responseData.Message = "Please select a file first";
             return responseData;
         }
-
-        // check file is exist
-        var category = await _sqliteDb.Table<Categories>().Where(c => c.GUID == categoryGUID && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
+        // check category is existed along with file
+        var category = await _sqliteDb.Table<Categories>().Where(c => c.GUID == categoryGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
         if (category == null)
         {
             responseData.StatusCode = HttpStatusCode.NotFound;
-            responseData.Message = $"Category {cat.GUID} not found";
+            responseData.Message = $"Category {categoryGUID} is not found or was deleted";
+            return responseData;
+        }
+        // check category is existed along with file
+        var categoryWithFile = await _sqliteDb.Table<Categories>().Where(c => c.GUID == categoryGUID && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
+        if (categoryWithFile == null)
+        {
+            responseData.StatusCode = HttpStatusCode.NotFound;
+            responseData.Message = $"Category {categoryGUID} with selected file {selectedFileGUID} not found";
             return responseData;
         }
         // check existing category by Name
-        var existingCategoryName = await _sqliteDb.Table<Categories>().Where(c => c.Name == cat.Name && c.FileGUID == selectedFileGUID && c.IsDeleted == 0 && c.GUID != cat.GUID).FirstOrDefaultAsync();
-        if (existingCategoryName != null)
-        {
-            responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"Category Name {cat.Name} is duplicated.";
-            return responseData;
-        }
-        category.Name = cat.Name;
-        category.Description = cat.Description;
+        category.IsDeleted = 1;
         category.UpdatedBy = _httpContextUtils.GetUserGUID();
         category.UpdatedDate = DateTime.UtcNow.ToString("u");
         await _sqliteDb.UpdateAsync(category);
         responseData.Data = category;
-        responseData.Message = $"Category {cat.Name} updated successfully";
+        responseData.Message = $"Deleted category {category.Name} successfully";
         return responseData;
     }
 }

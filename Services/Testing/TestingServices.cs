@@ -71,7 +71,7 @@ public class TestingServices
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Hoang Nguyen",
                 Email = "tindecken@gmail.com",
-                SystemRole = "Admin",
+                SystemRole = "SysAdmin",
                 UserName = "tindecken",
                 Password = encryptedPassword
             };
@@ -82,7 +82,7 @@ public class TestingServices
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Hoang Nguyen 2",
                 Email = "tindecken2@gmail.com",
-                SystemRole = "Admin",
+                SystemRole = "SysAdmin",
                 UserName = "tindecken2",
                 Password = encryptedPassword
             };
@@ -104,7 +104,7 @@ public class TestingServices
                 UserGUID = newUser.GUID.ToString(),
                 FileGUID = file.GUID.ToString(),
                 Role = "Admin",
-                IsSelected = 1,
+                IsSelected = 0,
             };
             await _sqliteDb.InsertAsync(newUserFile);
             // Associate user2 and file with role: USER
@@ -113,7 +113,8 @@ public class TestingServices
                 GUID = Guid.NewGuid().ToString(),
                 UserGUID = newUser2.GUID.ToString(),
                 FileGUID = file.GUID.ToString(),
-                Role = "User"
+                Role = "User",
+                IsSelected = 0
             };
             await _sqliteDb.InsertAsync(newUserFile2);
 

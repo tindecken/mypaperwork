@@ -4,7 +4,7 @@ namespace mypaperwork.Models.Categories
 {
     public class UpdateCategoryRequestModel
     {
-        [Required]
+        [Required, Length(36, 36)]
         public string GUID { get; set; }
         [MaxLength(100)]
         public string Name { get; set; }

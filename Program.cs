@@ -11,6 +11,7 @@ using mypaperwork.Models.Database;
 using mypaperwork.Services.Category;
 using mypaperwork.Services.Document;
 using mypaperwork.Services.File;
+using mypaperwork.Services.Paperwork;
 using SQLite;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,6 +51,7 @@ builder.Services.AddTransient<DBUtils>();
 builder.Services.AddTransient<UserServices>();
 builder.Services.AddTransient<LoggingServices>();
 builder.Services.AddTransient<CategoryServices>();
+builder.Services.AddTransient<PaperworkServices>();
 builder.Services.AddTransient<FileServices>();
 builder.Services.AddTransient<TestingServices>();
 builder.Services.AddTransient<DocumentServices>();

@@ -43,7 +43,7 @@ public class UserServices
             Data = null,
             Error = null
         };
-        if (user.IsDeleted == 0) { 
+        if (user.IsDeleted == 1) { 
             responseData.Success = false;
             responseData.Message = "User is disabled, please contact administration!";
             responseData.StatusCode = HttpStatusCode.Unauthorized;

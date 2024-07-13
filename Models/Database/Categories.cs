@@ -1,13 +1,14 @@
-﻿using SQLite;
+﻿using System.ComponentModel.DataAnnotations;
+using SQLite;
 
 namespace mypaperwork.Models.Database
 {
     [Table("Categories")]
     public class Categories
     {
-        [PrimaryKey]
+        [PrimaryKey, Length(36,36)]
         public string GUID { get; set; }
-        [NotNull]
+        [NotNull, Length(36,36)]
         public string FileGUID { get; set; }
         [NotNull]
         public string Name { get; set; }

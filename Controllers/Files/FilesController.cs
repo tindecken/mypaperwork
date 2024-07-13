@@ -7,11 +7,11 @@ namespace mypaperwork.Controllers.Files
 {
     [ApiController]
     [Route("[controller]")]
-    public class CategoriesController : TransformResponse
+    public class FilesController : TransformResponse
     {
         private readonly AppSettings _appSettings;
         private FileServices _fileServices;
-        public CategoriesController(AppSettings appSettings, FileServices fileServices, HttpContextUtils httpContextUtils)
+        public FilesController(AppSettings appSettings, FileServices fileServices, HttpContextUtils httpContextUtils)
         {
             _appSettings = appSettings;
             _fileServices = fileServices;
