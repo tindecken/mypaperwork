@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
 using mypaperwork.Models;
+using mypaperwork.Models.Filter;
 using mypaperwork.Models.Paperwork;
 using mypaperwork.Services.Paperwork;
 using mypaperwork.Utils;
@@ -40,6 +41,14 @@ public class PaperworksController: TransformResponse
     public async Task<IActionResult> UpdatePaperwork(string categoryGUID, string paperworkGUID)
     {
         var response = await _paperworkServices.DeletePaperwork(categoryGUID, paperworkGUID);
+            
+        return Transform(response);
+    }
+    [HttpGet("getbyfile")]
+    [Authorize]
+    public async Task<IActionResult> GetByFile([FromQuery] PaginationFilter filter)
+    {
+        var response = await _paperworkServices.GetByFile(filter);
             
         return Transform(response);
     }
