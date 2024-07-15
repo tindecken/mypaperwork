@@ -3,17 +3,19 @@ using SQLite;
 
 namespace mypaperwork.Models.Database
 {
-    [Table("PaperWorksCategories")]
-    public class PaperWorksCategories
+    [Table("PaperworksCategories")]
+    public class PaperworksCategories
     {
         [PrimaryKey, Length(36,36)]
         public string GUID { get; set; }
         [Length(36,36)]
-        public string PaperWorkGUID { get; set; }
+        public string PaperworkGUID { get; set; }
         [Length(36,36)]
         public string? CategoryGUID { get; set; }
         public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");
         public string? CreatedBy { get; set; }
+        public string? UpdatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
         public int IsDeleted { get; set; } = 0;
 
     }

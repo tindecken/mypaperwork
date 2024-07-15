@@ -54,11 +54,11 @@ public class TestingServices
         // clean up all tables
         await _sqliteDb.DeleteAllAsync<Users>();
         await _sqliteDb.DeleteAllAsync<FilesDBModel>();
-        await _sqliteDb.DeleteAllAsync<PaperWorksCategories>();
+        await _sqliteDb.DeleteAllAsync<PaperworksCategories>();
         await _sqliteDb.DeleteAllAsync<Categories>();
         await _sqliteDb.DeleteAllAsync<Logs>();
         await _sqliteDb.DeleteAllAsync<UsersFiles>();
-        await _sqliteDb.DeleteAllAsync<PaperWorks>();
+        await _sqliteDb.DeleteAllAsync<Paperworks>();
         
         var user = await _sqliteDb.Table<Users>().Where(u => u.UserName == "tindecken").FirstOrDefaultAsync();
         if (user == null)
@@ -151,7 +151,7 @@ public class TestingServices
             await _sqliteDb.InsertAsync(category2);
         
             // create paperwork1 for category "Hóa Đơn"
-            var paperwork1 = new PaperWorks()
+            var paperwork1 = new Paperworks()
             {
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Hóa đơn tháng 1",
@@ -165,7 +165,7 @@ public class TestingServices
             await _sqliteDb.InsertAsync(paperwork1);
         
             // create paperwork 2 for category "Hóa Đơn"
-            var paperwork2 = new PaperWorks()
+            var paperwork2 = new Paperworks()
             {
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Hóa đơn tháng 2",
@@ -177,19 +177,19 @@ public class TestingServices
         
             };
             // Associate 2 paperworks with category "Hóa Đơn"
-            var paperworkCategory = new PaperWorksCategories()
+            var paperworkCategory = new PaperworksCategories()
             {
                 GUID = Guid.NewGuid().ToString(),
-                PaperWorkGUID = paperwork1.GUID,
+                PaperworkGUID = paperwork1.GUID,
                 CategoryGUID = category.GUID,
                 CreatedBy = newUser.GUID
             };
             await _sqliteDb.InsertAsync(paperworkCategory);
         
-            var paperworkCategory2= new PaperWorksCategories()
+            var paperworkCategory2= new PaperworksCategories()
             {
                 GUID = Guid.NewGuid().ToString(),
-                PaperWorkGUID = paperwork2.GUID,
+                PaperworkGUID = paperwork2.GUID,
                 CategoryGUID = category.GUID,
                 CreatedBy = newUser.GUID
             };
@@ -199,7 +199,7 @@ public class TestingServices
             // Create 1500 paperworks with catgory "Hóa Đơn"
             for (int i = 1; i <= 1500; i++)
             {
-                var newPaperwork = new PaperWorks()
+                var newPaperwork = new Paperworks()
                 {
                     GUID = Guid.NewGuid().ToString(),
                     Name = $"Hóa đơn {i}",
@@ -212,17 +212,17 @@ public class TestingServices
                 };
                 await _sqliteDb.InsertAsync(newPaperwork);
                 // associate newPaperwork with category "Hóa Đơn"
-                var newPaperworkCategory = new PaperWorksCategories()
+                var newPaperworkCategory = new PaperworksCategories()
                 {
                     GUID = Guid.NewGuid().ToString(),
-                    PaperWorkGUID = newPaperwork.GUID,
+                    PaperworkGUID = newPaperwork.GUID,
                     CategoryGUID = category.GUID,
                     CreatedBy = newUser.GUID
                 };
                 await _sqliteDb.InsertAsync(newPaperworkCategory);
             }
             // create 2 paperworks and associate with category "Mua Sắm"
-            var paperwork3 = new PaperWorks()
+            var paperwork3 = new Paperworks()
             {
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Mua Sắm 1",
@@ -236,7 +236,7 @@ public class TestingServices
             await _sqliteDb.InsertAsync(paperwork3);
         
             // create paperwork 4 for category "Mua Sắm"
-            var paperwork4 = new PaperWorks()
+            var paperwork4 = new Paperworks()
             {
                 GUID = Guid.NewGuid().ToString(),
                 Name = "Mua Sắm 2",
@@ -250,19 +250,19 @@ public class TestingServices
             await _sqliteDb.InsertAsync(paperwork4);
         
             // Associate 2 paperworks with category "Mua Sắm"
-            var paperworkCategory3 = new PaperWorksCategories()
+            var paperworkCategory3 = new PaperworksCategories()
             {
                 GUID = Guid.NewGuid().ToString(),
-                PaperWorkGUID = paperwork3.GUID,
+                PaperworkGUID = paperwork3.GUID,
                 CategoryGUID = category2.GUID,
                 CreatedBy = newUser.GUID
             };
             await _sqliteDb.InsertAsync(paperworkCategory3);    
         
-            var paperworkCategory4 = new PaperWorksCategories()
+            var paperworkCategory4 = new PaperworksCategories()
             {
                 GUID = Guid.NewGuid().ToString(),
-                PaperWorkGUID = paperwork4.GUID,
+                PaperworkGUID = paperwork4.GUID,
                 CategoryGUID = category2.GUID,
                 CreatedBy = newUser.GUID
             };
@@ -271,7 +271,7 @@ public class TestingServices
             // Create 1500 paperworks with catgory "Mua Sắm"
             for (int i = 1; i <= 1500; i++)
             {
-                var newPaperwork = new PaperWorks()
+                var newPaperwork = new Paperworks()
                 {
                     GUID = Guid.NewGuid().ToString(),
                     Name = $"Mua Sắm {i}",
@@ -284,10 +284,10 @@ public class TestingServices
                 };
                 await _sqliteDb.InsertAsync(newPaperwork);
                 // associate newPaperwork with category "Mua Sắm"
-                var newPaperworkCategory = new PaperWorksCategories()
+                var newPaperworkCategory = new PaperworksCategories()
                 {
                     GUID = Guid.NewGuid().ToString(),
-                    PaperWorkGUID = newPaperwork.GUID,
+                    PaperworkGUID = newPaperwork.GUID,
                     CategoryGUID = category2.GUID,
                     CreatedBy = newUser.GUID
                 };

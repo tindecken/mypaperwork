@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
+using mypaperwork.Models;
 using mypaperwork.Models.Paperwork;
 using mypaperwork.Services.Paperwork;
 using mypaperwork.Utils;
@@ -20,9 +21,25 @@ public class PaperworksController: TransformResponse
 
     [HttpPost()]
     [Authorize]
-    public async Task<IActionResult> SelectFile([FromBody] CreatePaperworkRequestModel createPaperworkRequestModel)
+    public async Task<IActionResult> CreatePaperwork([FromBody] CreatePaperworkRequestModel createPaperworkRequestModel)
     {
         var response = await _paperworkServices.CreatePaperwork(createPaperworkRequestModel);
+            
+        return Transform(response);
+    }
+    [HttpPost("update")]
+    [Authorize]
+    public async Task<IActionResult> UpdatePaperwork([FromBody] UpdatePaperworkRequestModel updatePaperworkRequestModel)
+    {
+        var response = await _paperworkServices.UpdatePaperwork(updatePaperworkRequestModel);
+            
+        return Transform(response);
+    }
+    [HttpDelete("delete/category/{categoryGUID}/paperwork/{paperworkGUID}")]
+    [Authorize(UserRole.Admin)]
+    public async Task<IActionResult> UpdatePaperwork(string categoryGUID, string paperworkGUID)
+    {
+        var response = await _paperworkServices.DeletePaperwork(categoryGUID, paperworkGUID);
             
         return Transform(response);
     }

@@ -3,8 +3,8 @@ using SQLite;
 
 namespace mypaperwork.Models.Database
 {
-    [Table("PaperWorks")]
-    public class PaperWorks
+    [Table("Paperworks")]
+    public class Paperworks
     {
         [PrimaryKey, Length(36,36)]
         public string GUID { get; set; }
