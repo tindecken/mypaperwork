@@ -24,6 +24,32 @@ public class DocumentServices
     public async Task<GenericResponseData> Upload(string paperWorkGUID, IFormFileCollection files)
     {
         var responseData = new GenericResponseData();
+        
+        // check user is selected file or not
+        var selectedFileGUID = _httpContextUtils.GetSelectedFileGUID();
+        if (string.IsNullOrEmpty(selectedFileGUID))
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = "Please select a file first";
+            return responseData;
+        }
+        // check file is existed or not
+        var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == selectedFileGUID && f.IsDeleted == 0)
+            .FirstOrDefaultAsync();
+        if (file == null)
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = $"File {selectedFileGUID} not found or deleted";
+            return responseData;
+        }
+        // check category (with file) is exist or not
+        var existedCategory = await _sqliteDb.Table<Categories>().Where(c => c.GUID == model.CategoryGUID && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
+        if (existedCategory == null)
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = $"Category {model.CategoryGUID} associated with file {selectedFileGUID} not found or was deleted";
+            return responseData;
+        }
 
         var storagePath = Path.Combine(Directory.GetCurrentDirectory(), _appSettings.StoragePath);
         foreach (var file in files) { 
