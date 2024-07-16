@@ -18,7 +18,7 @@ public class Document : TransformResponse
 
     }
 
-    [AllowAnonymous]
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> UploadFiles()
     {

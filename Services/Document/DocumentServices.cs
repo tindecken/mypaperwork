@@ -15,11 +15,13 @@ public class DocumentServices
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly AppSettings _appSettings;
     private readonly SQLiteAsyncConnection _sqliteDb;
-    public DocumentServices(IHttpContextAccessor httpContextAccessor, SQLiteAsyncConnection sqliteDb, AppSettings appSettings)
+    private readonly HttpContextUtils _httpContextUtils;
+    public DocumentServices(IHttpContextAccessor httpContextAccessor, SQLiteAsyncConnection sqliteDb, AppSettings appSettings, HttpContextUtils httpContextUtils)
     {
         _httpContextAccessor = httpContextAccessor;
         _sqliteDb = sqliteDb;
         _appSettings = appSettings;
+        _httpContextUtils = httpContextUtils;
     }
     public async Task<GenericResponseData> Upload(string paperWorkGUID, IFormFileCollection files)
     {
@@ -34,20 +36,20 @@ public class DocumentServices
             return responseData;
         }
         // check file is existed or not
-        var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == selectedFileGUID && f.IsDeleted == 0)
+        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == selectedFileGUID && f.IsDeleted == 0)
             .FirstOrDefaultAsync();
-        if (file == null)
+        if (existedFile == null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
             responseData.Message = $"File {selectedFileGUID} not found or deleted";
             return responseData;
         }
-        // check category (with file) is exist or not
-        var existedCategory = await _sqliteDb.Table<Categories>().Where(c => c.GUID == model.CategoryGUID && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
-        if (existedCategory == null)
+        // check exist paperwork
+        var existedPaperwork = await _sqliteDb.Table<Paperworks>().Where(c => c.GUID == paperWorkGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
+        if (existedPaperwork == null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"Category {model.CategoryGUID} associated with file {selectedFileGUID} not found or was deleted";
+            responseData.Message = $"Paperwork {paperWorkGUID}  not found or was deleted";
             return responseData;
         }
 
@@ -87,7 +89,7 @@ public class DocumentServices
 
         responseData.Data = null;
         responseData.Success = true;
-        responseData.Message = $"Successfully added {files.Count} document(s) for paperwork: {paperWorkGUID}.";
+        responseData.Message = $"Successfully added {files.Count} document(s) for paperwork: {existedPaperwork.Name}.";
         responseData.TotalRecords = files.Count;
         return responseData;
     }
