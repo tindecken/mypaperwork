@@ -58,8 +58,8 @@ public class PaperworkServices
         var paperwork = new Paperworks()
         {
             GUID = Guid.NewGuid().ToString(),
-            Name = model.Name,
-            Description = model.Description,
+            Name = model.Name.Trim(),
+            Description = model.Description?.Trim(),
             IssuedDate = model.IssuedDate,
             Price = model.Price,
             PriceCurrency = model.PriceCurrency,
@@ -69,7 +69,7 @@ public class PaperworkServices
         if (result <= 0)
         {
             responseData.StatusCode = HttpStatusCode.InternalServerError;
-            responseData.Message = $"Something went wrong while creating new paperwork: {model.Name}";
+            responseData.Message = $"Something went wrong while creating new paperwork: {model.Name.Trim()}";
             responseData.Data = paperwork;
             return responseData;
         }
@@ -125,8 +125,8 @@ public class PaperworkServices
         }
         
         // update existed paperwork
-        if (!string.IsNullOrEmpty(model.Name)) existedPaperwork.Name = model.Name;
-        if (!string.IsNullOrEmpty(model.Description)) existedPaperwork.Description = model.Description;
+        if (!string.IsNullOrEmpty(model.Name)) existedPaperwork.Name = model.Name.Trim();
+        if (!string.IsNullOrEmpty(model.Description)) existedPaperwork.Description = model.Description.Trim();
         if (!string.IsNullOrEmpty(model.IssuedDate)) existedPaperwork.IssuedDate = model.IssuedDate;
         if (model.Price != null) existedPaperwork.Price = model.Price;
         if (!string.IsNullOrEmpty(model.PriceCurrency)) existedPaperwork.PriceCurrency = model.PriceCurrency;

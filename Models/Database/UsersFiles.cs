@@ -16,6 +16,8 @@ namespace mypaperwork.Models.Database
         public string Role { get; set; }
         public int? IsSelected { get; set; } = 0;
         public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");
+        public string UpdatedDate { get; set; }
+        public string UpdatedBy { get; set; }
         public int IsDeleted { get; set; } = 0;
     }
 }

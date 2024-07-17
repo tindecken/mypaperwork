@@ -10,6 +10,7 @@ namespace mypaperwork.Models.Database
         public string GUID { get; set; }
         [Length(36,36)]
         public string PaperWorkGUID { get; set; }
+        public string Folder { get; set; }
         public string FileName { get; set; }
         public decimal FileSize { get; set; }
         public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");

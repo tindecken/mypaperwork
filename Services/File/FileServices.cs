@@ -2,6 +2,7 @@
 using mypaperwork.Models;
 using mypaperwork.Models.Authentication;
 using mypaperwork.Models.Database;
+using mypaperwork.Models.Files;
 using mypaperwork.Services.Logging;
 using mypaperwork.Utils;
 using SQLite;
@@ -59,5 +60,92 @@ public class FileServices
         responseData.Success = true;
         return responseData;
     }
-    
+    public async Task<GenericResponseData> CreateFile(CreateFileRequestModel model)
+    {
+        var responseData = new GenericResponseData();
+        var token = _httpContextUtils.GetToken();
+        var userGUID = token.userGUID;
+        
+        // check existed file
+        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.Name == model.Name && f.IsDeleted == 0).FirstOrDefaultAsync();
+        if (existedFile != null)
+        {
+            var existedUsersFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.FileGUID == existedFile.GUID && uf.IsDeleted == 0).FirstOrDefaultAsync();
+            if (existedUsersFiles != null)
+            {
+                responseData.StatusCode = HttpStatusCode.BadRequest;
+                responseData.Message = $"File {model.Name.Trim()} is duplicated.";
+                return responseData;
+            }
+        }
+        
+        var file = new FilesDBModel
+        {
+            GUID = Guid.NewGuid().ToString(),
+            Name = model.Name.Trim(),
+            Description = model.Description,
+            CreatedBy = userGUID,
+            IsDeleted = 0
+        };
+        await _sqliteDb.InsertAsync(file);
+        var userfile = new UsersFiles
+        {
+            GUID = Guid.NewGuid().ToString(),
+            UserGUID = userGUID,
+            FileGUID = file.GUID,
+            Role = "Admin"
+        };
+        await _sqliteDb.InsertAsync(userfile);
+        await _dbUtils.SetSelectedFileAsync(userGUID, file.GUID);
+        // Regenerate token
+        var user = await _sqliteDb.Table<Users>().Where(u => u.GUID == userGUID).FirstOrDefaultAsync();
+        var reGeneratedtoken = _jwtUtils.generateJwtToken(user, userfile);
+        var response = new AuthenticateResponse(user, reGeneratedtoken);
+        responseData.Data = response;
+        responseData.StatusCode = HttpStatusCode.OK;
+        responseData.Message = $"Create file: {file.Name} successfully.";
+        responseData.Data = reGeneratedtoken;
+        responseData.Success = true;
+        return responseData;
+    }
+    public async Task<GenericResponseData> DeleteFile(string fileGUID)
+    {
+        var responseData = new GenericResponseData();
+        var token = _httpContextUtils.GetToken();
+        var userGUID = token.userGUID;
+        
+        // check existed file
+        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == fileGUID && f.IsDeleted == 0).FirstOrDefaultAsync();
+        if (existedFile == null)
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = $"File {fileGUID} is not existed.";
+            return responseData;
+        }
+        var existedUserFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.FileGUID == fileGUID && uf.IsDeleted == 0).FirstOrDefaultAsync();
+        if (existedUserFile == null)
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = $"File {fileGUID} is not associated with user {userGUID}.";
+            return responseData;
+        }
+        // update file
+        existedFile.IsDeleted = 1;
+        existedFile.UpdatedBy = userGUID;
+        existedFile.UpdatedDate = DateTime.UtcNow.ToString("u");
+        await _sqliteDb.UpdateAsync(existedFile);
+        
+        // update userfile
+        existedUserFile.IsDeleted = 1;
+        existedUserFile.IsSelected = 0;
+        existedUserFile.UpdatedBy = userGUID;
+        existedUserFile.UpdatedDate = DateTime.UtcNow.ToString("u");
+        await _sqliteDb.UpdateAsync(existedUserFile);
+        
+        responseData.Data = null;
+        responseData.StatusCode = HttpStatusCode.OK;
+        responseData.Message = $"Delete file: {fileGUID} successfully.";
+        responseData.Success = true;
+        return responseData;
+    }
 }

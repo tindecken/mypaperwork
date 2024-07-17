@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
+using mypaperwork.Models;
+using mypaperwork.Models.Files;
 using mypaperwork.Services.File;
 using mypaperwork.Utils;
 
@@ -22,6 +24,22 @@ namespace mypaperwork.Controllers.Files
         public async Task<IActionResult> SelectFile(string fileGUID)
         {
             var response = await _fileServices.SelectFile(fileGUID);
+            
+            return Transform(response);
+        }
+        [HttpPost()]
+        [Authorize]
+        public async Task<IActionResult> CreateFile([FromBody] CreateFileRequestModel model)
+        {
+            var response = await _fileServices.CreateFile(model);
+            
+            return Transform(response);
+        }
+        [HttpDelete("{fileGUID}")]
+        [Authorize(UserRole.Admin)]
+        public async Task<IActionResult> CreateFile(string fileGUID)
+        {
+            var response = await _fileServices.DeleteFile(fileGUID);
             
             return Transform(response);
         }

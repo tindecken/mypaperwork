@@ -6,7 +6,7 @@ namespace mypaperwork.Models.Categories
     {
         [Required, MaxLength(100)]
         public string Name { get; set; }
-        [MaxLength(1000)]
+        [MaxLength(5000)]
         public string? Description { get; set; }
     }
 }

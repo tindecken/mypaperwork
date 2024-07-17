@@ -71,7 +71,13 @@ public class DocumentServices
             var fileNameFull = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName?.Trim('"');
             var fileName = new string((Path.GetFileNameWithoutExtension(fileNameFull) ?? string.Empty).Take(20).ToArray()).Replace(" ", "-");
             fileName = fileName + Guid.NewGuid() + Path.GetExtension(fileNameFull);
-            var sourceFile = Path.Combine(storagePath, fileName);
+            // create folder if not exist
+            if (!Directory.Exists(Path.Combine(storagePath, existedFile.GUID)))
+            {
+                Directory.CreateDirectory(Path.Combine(storagePath, existedFile.GUID));
+            }
+
+            var sourceFile = Path.Combine(storagePath, existedFile.GUID, fileName);
             await using (var stream = new FileStream(sourceFile, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -81,8 +87,10 @@ public class DocumentServices
             {
                 GUID = Guid.NewGuid().ToString(),
                 PaperWorkGUID = paperWorkGUID,
+                Folder = existedFile.GUID,
                 FileName = fileName,
                 FileSize = fileSize,
+                CreatedBy = _httpContextUtils.GetUserGUID()
             };
             await _sqliteDb.InsertAsync(document);
         }

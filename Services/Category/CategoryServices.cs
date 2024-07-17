@@ -44,7 +44,7 @@ public class CategoryServices
             responseData.Message = $"File {selectedFileGUID} not found";
             return responseData;
         }
-        var existingCategory = await _sqliteDb.Table<Categories>().Where(c => c.Name == cat.Name && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
+        var existingCategory = await _sqliteDb.Table<Categories>().Where(c => c.Name == cat.Name.Trim() && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
         if (existingCategory != null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
@@ -56,13 +56,13 @@ public class CategoryServices
         {
             GUID = Guid.NewGuid().ToString(),
             FileGUID = selectedFileGUID,
-            Name = cat.Name,
-            Description = cat.Description,
+            Name = cat.Name.Trim(),
+            Description = cat.Description?.Trim(),
             CreatedBy = _httpContextUtils.GetUserGUID(),
         };
         await _sqliteDb.InsertAsync(category);  
         responseData.Data = category;
-        responseData.Message = $"Category {cat.Name} created successfully";
+        responseData.Message = $"Category {cat.Name.Trim()} created successfully";
         return responseData;
     }
     public async Task<GenericResponseData> UpdateCategory(UpdateCategoryRequestModel cat)
@@ -92,20 +92,20 @@ public class CategoryServices
             return responseData;
         }
         // check existing category by Name
-        var existingCategoryName = await _sqliteDb.Table<Categories>().Where(c => c.Name == cat.Name && c.FileGUID == selectedFileGUID && c.IsDeleted == 0 && c.GUID != cat.GUID).FirstOrDefaultAsync();
+        var existingCategoryName = await _sqliteDb.Table<Categories>().Where(c => c.Name == cat.Name.Trim() && c.FileGUID == selectedFileGUID && c.IsDeleted == 0 && c.GUID != cat.GUID).FirstOrDefaultAsync();
         if (existingCategoryName != null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"Category Name {cat.Name} is duplicated.";
+            responseData.Message = $"Category Name {cat.Name.Trim()} is duplicated.";
             return responseData;
         }   
-        category.Name = cat.Name;
+        category.Name = cat.Name.Trim();
         category.Description = cat.Description;
         category.UpdatedBy = _httpContextUtils.GetUserGUID();
         category.UpdatedDate = DateTime.UtcNow.ToString("u");
         await _sqliteDb.UpdateAsync(category);
         responseData.Data = category;
-        responseData.Message = $"Category {cat.Name} updated successfully";
+        responseData.Message = $"Category {cat.Name.Trim()} updated successfully";
         return responseData;
     }
     public async Task<GenericResponseData> DeleteCategory(string categoryGUID)
