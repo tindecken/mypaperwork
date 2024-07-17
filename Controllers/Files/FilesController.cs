@@ -2,6 +2,7 @@
 using mypaperwork.Middlewares;
 using mypaperwork.Models;
 using mypaperwork.Models.Files;
+using mypaperwork.Models.Filter;
 using mypaperwork.Services.File;
 using mypaperwork.Utils;
 
@@ -40,6 +41,14 @@ namespace mypaperwork.Controllers.Files
         public async Task<IActionResult> CreateFile(string fileGUID)
         {
             var response = await _fileServices.DeleteFile(fileGUID);
+            
+            return Transform(response);
+        }
+        [HttpGet("getfilesbyuser")]
+        [Authorize]
+        public async Task<IActionResult> GetByFile([FromQuery] PaginationFilter filter)
+        {
+            var response = await _fileServices.GetFilesByUser(filter);
             
             return Transform(response);
         }

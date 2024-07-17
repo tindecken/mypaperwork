@@ -3,6 +3,7 @@ using mypaperwork.Models;
 using mypaperwork.Models.Authentication;
 using mypaperwork.Models.Database;
 using mypaperwork.Models.Files;
+using mypaperwork.Models.Filter;
 using mypaperwork.Services.Logging;
 using mypaperwork.Utils;
 using SQLite;
@@ -145,6 +146,20 @@ public class FileServices
         responseData.Data = null;
         responseData.StatusCode = HttpStatusCode.OK;
         responseData.Message = $"Delete file: {fileGUID} successfully.";
+        responseData.Success = true;
+        return responseData;
+    }
+    public async Task<GenericResponseData> GetFilesByUser(PaginationFilter filter)
+    {
+        var responseData = new GenericResponseData();
+        var token = _httpContextUtils.GetToken();
+        var userGUID = token.userGUID;
+        
+        
+        
+        responseData.Data = null;
+        responseData.StatusCode = HttpStatusCode.OK;
+        responseData.Message = $"Get files successfully.";
         responseData.Success = true;
         return responseData;
     }
