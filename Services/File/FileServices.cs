@@ -149,17 +149,30 @@ public class FileServices
         responseData.Success = true;
         return responseData;
     }
+
     public async Task<GenericResponseData> GetFilesByUser(PaginationFilter filter)
     {
         var responseData = new GenericResponseData();
         var token = _httpContextUtils.GetToken();
         var userGUID = token.userGUID;
-        
-        
-        
-        responseData.Data = null;
+        var userFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.IsDeleted == 0)
+            .ToListAsync();
+        var files = new List<FilesDBModel>();
+
+        foreach (var userFile in userFiles)
+        {
+            var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == userFile.FileGUID && f.IsDeleted == 0)
+                .FirstOrDefaultAsync();
+            if (file != null)
+            {
+                files.Add(file);
+            }
+        }
+
+        responseData.Data = files;
         responseData.StatusCode = HttpStatusCode.OK;
-        responseData.Message = $"Get files successfully.";
+        responseData.Message = $"Get {files.Count} files successfully.";
+        responseData.TotalRecords = files.Count;
         responseData.Success = true;
         return responseData;
     }

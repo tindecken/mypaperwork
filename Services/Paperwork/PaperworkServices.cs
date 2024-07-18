@@ -326,4 +326,106 @@ public class PaperworkServices
         responseData.PageSize = filter.PageSize;
         return responseData;
     }
+    public async Task<GenericResponseData> GetByCategory(string categoryGUID, PaginationFilter filter)
+    {
+        var responseData = new GenericResponseData();
+        // check user is selected file or not
+        var selectedFileGUID = _httpContextUtils.GetSelectedFileGUID();
+        if (string.IsNullOrEmpty(selectedFileGUID))
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = "Please select a file first";
+            return responseData;
+        }
+        // check file is existed or not
+        var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == selectedFileGUID && f.IsDeleted == 0)
+            .FirstOrDefaultAsync();
+        if (file == null)
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = $"File {selectedFileGUID} not found or deleted";
+            return responseData;
+        }
+        
+        var existedCategory = await _sqliteDb.Table<Categories>().Where(c => c.GUID == categoryGUID && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
+        if (existedCategory == null)
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = $"Category {categoryGUID} not found or was deleted";
+            return responseData;
+        }
+
+        // get all paperworksCategories associated
+        var paperworksCategories = new List<PaperworksCategories>();
+        var papersCats = await _sqliteDb.Table<PaperworksCategories>().Where(p => p.CategoryGUID == existedCategory.GUID && p.IsDeleted == 0).ToListAsync();
+        foreach (var pc in papersCats)
+        {
+            paperworksCategories.Add(pc);
+        }
+
+        var paperworks = new List<Paperworks>();
+        foreach (var pc in paperworksCategories)
+        {
+            var p = await _sqliteDb.Table<Paperworks>().Where(x => x.GUID == pc.PaperworkGUID && x.IsDeleted == 0).FirstOrDefaultAsync();
+            if (p !=null ) paperworks.Add(p);
+        }
+        
+        var paperworksQuery = paperworks.AsQueryable();
+        
+        // Filtering
+        if (!string.IsNullOrEmpty(filter.FilterValue))
+        {
+            var filterValue = filter.FilterValue.ToLower();
+            paperworksQuery = paperworksQuery.Where(x =>
+                x.GUID.ToLower().Contains(filterValue) ||
+                x.CreatedDate.ToString().ToLower().Contains(filterValue) ||
+                x.Name.ToString().ToLower().Contains(filterValue) ||
+                x.Description.ToString().ToLower().Contains(filterValue) ||
+                x.Price.ToString().ToLower().Contains(filterValue) ||
+                x.PriceCurrency.ToLower().Contains(filterValue) ||
+                x.IssuedDate.ToLower().Contains(filterValue));
+        }
+        // Sorting
+        if (!string.IsNullOrEmpty(filter.SortBy))
+        {
+            switch (filter.SortBy.ToLower())
+            {
+                case "name":
+                    paperworksQuery = (bool)filter.IsSortDescending ? paperworksQuery.OrderByDescending(x => x.Name) : paperworksQuery.OrderBy(x => x.Name);
+                    break;
+                case "description":
+                    paperworksQuery = (bool)filter.IsSortDescending ? paperworksQuery.OrderByDescending(x => x.Description) : paperworksQuery.OrderBy(x => x.Description);
+                    break;
+                case "createddate":
+                    paperworksQuery = (bool)filter.IsSortDescending ? paperworksQuery.OrderByDescending(x => x.CreatedDate) : paperworksQuery.OrderBy(x => x.CreatedDate);
+                    break;
+                case "price":
+                    paperworksQuery = (bool)filter.IsSortDescending ? paperworksQuery.OrderByDescending(x => x.Price) : paperworksQuery.OrderBy(x => x.Price);
+                    break;
+                case "pricecurrency":
+                    paperworksQuery = (bool)filter.IsSortDescending ? paperworksQuery.OrderByDescending(x => x.PriceCurrency) : paperworksQuery.OrderBy(x => x.PriceCurrency);
+                    break;
+                case "issueddate":
+                    paperworksQuery = (bool)filter.IsSortDescending ? paperworksQuery.OrderByDescending(x => x.IssuedDate) : paperworksQuery.OrderBy(x => x.IssuedDate);
+                    break;
+                default:
+                    responseData.Success = false;
+                    responseData.StatusCode = HttpStatusCode.BadRequest;
+                    responseData.Message = "Invalid input sort by.";
+                    return responseData;
+            }
+        }
+        
+        paperworksQuery = paperworksQuery.Skip((filter.PageNumber - 1) * filter.PageSize).Take(filter.PageSize);
+        var totalRecords = paperworks.Count;
+
+        responseData.Data = paperworksQuery;
+        responseData.Message = $"Retrieved {paperworksQuery.Count()}/{totalRecords} record(s) successfully.";
+        responseData.Success = true;
+        responseData.TotalRecords = totalRecords;
+        responseData.TotalFilteredRecords = paperworksQuery.Count();
+        responseData.PageNumber = filter.PageNumber;
+        responseData.PageSize = filter.PageSize;
+        return responseData;
+    }
 }

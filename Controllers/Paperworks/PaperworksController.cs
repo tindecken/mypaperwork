@@ -52,4 +52,12 @@ public class PaperworksController: TransformResponse
             
         return Transform(response);
     }
+    [HttpGet("getbycategory/{categoryGUID}")]
+    [Authorize]
+    public async Task<IActionResult> GetByCategory(string categoryGUID, [FromQuery] PaginationFilter filter)
+    {
+        var response = await _paperworkServices.GetByCategory(categoryGUID, filter);
+            
+        return Transform(response);
+    }
 }
