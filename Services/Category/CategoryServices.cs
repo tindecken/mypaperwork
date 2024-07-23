@@ -44,7 +44,7 @@ public class CategoryServices
             responseData.Message = $"File {selectedFileGUID} not found";
             return responseData;
         }
-        var existingCategory = await _sqliteDb.Table<Categories>().Where(c => c.Name == cat.Name.Trim() && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
+        var existingCategory = await _sqliteDb.Table<Categories>().Where(c => c.Name == cat.Name && c.FileGUID == selectedFileGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
         if (existingCategory != null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
