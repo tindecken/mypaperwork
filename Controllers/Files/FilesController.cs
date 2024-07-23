@@ -3,7 +3,7 @@ using mypaperwork.Middlewares;
 using mypaperwork.Models;
 using mypaperwork.Models.Files;
 using mypaperwork.Models.Filter;
-using mypaperwork.Services.File;
+using mypaperwork.Services.FileServices;
 using mypaperwork.Utils;
 
 namespace mypaperwork.Controllers.Files
@@ -36,7 +36,7 @@ namespace mypaperwork.Controllers.Files
             
             return Transform(response);
         }
-        [HttpDelete("{fileGUID}")]
+        [HttpDelete("{fileGUID:length(36)}")]
         [Authorize(UserRole.Admin)]
         public async Task<IActionResult> CreateFile(string fileGUID)
         {

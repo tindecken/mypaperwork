@@ -8,7 +8,7 @@ using mypaperwork.Services.Logging;
 using mypaperwork.Utils;
 using SQLite;
 
-namespace mypaperwork.Services.File;
+namespace mypaperwork.Services.FileServices;
 public class FileServices
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -143,7 +143,6 @@ public class FileServices
         existedUserFile.UpdatedDate = DateTime.UtcNow.ToString("u");
         await _sqliteDb.UpdateAsync(existedUserFile);
         
-        responseData.Data = null;
         responseData.StatusCode = HttpStatusCode.OK;
         responseData.Message = $"Delete file: {fileGUID} successfully.";
         responseData.Success = true;
@@ -163,10 +162,7 @@ public class FileServices
         {
             var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == userFile.FileGUID && f.IsDeleted == 0)
                 .FirstOrDefaultAsync();
-            if (file != null)
-            {
-                files.Add(file);
-            }
+            if (file != null) files.Add(file);
         }
 
         responseData.Data = files;

@@ -36,7 +36,7 @@ namespace mypaperwork.Controllers.Categories
 
             return Transform(response);
         }
-        [HttpDelete("delete/{categoryGUID}")]
+        [HttpDelete("delete/{categoryGUID:length(36)}")]
         [Authorize(UserRole.Admin)]
         public async Task<IActionResult> DeleteCategory(string categoryGUID)
         {

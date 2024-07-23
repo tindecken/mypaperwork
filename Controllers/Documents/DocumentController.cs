@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
 using mypaperwork.Models;
+using mypaperwork.Models.Filter;
 using mypaperwork.Services.Document;
 using mypaperwork.Services.Logging;
 using mypaperwork.Services.Testing;
@@ -35,6 +36,13 @@ public class Document : TransformResponse
             return BadRequest();
         }
         var response = await _documentServices.Upload(paperWorkGUID, files);
+        return Transform(response);
+    }
+    [Authorize]
+    [HttpGet("{documentGUID:length(36)}")]
+    public async Task<IActionResult> GetDocumentsByGUID(string documentGUID)
+    {
+        var response = await _documentServices.GetDocumentByGUID(documentGUID);
         return Transform(response);
     }
 }

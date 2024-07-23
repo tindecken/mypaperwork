@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using mypaperwork.Models;
 using mypaperwork.Models.Database;
+using mypaperwork.Models.Filter;
 using mypaperwork.Utils;
 using Serilog;
 using SQLite;
@@ -100,5 +101,67 @@ public class DocumentServices
         responseData.Message = $"Successfully added {files.Count} document(s) for paperwork: {existedPaperwork.Name}.";
         responseData.TotalRecords = files.Count;
         return responseData;
+    }
+    public async Task<GenericResponseData> GetDocumentByGUID(string documentGUID)
+    {
+        var responseData = new GenericResponseData();
+        
+        // check user is selected file or not
+        var selectedFileGUID = _httpContextUtils.GetSelectedFileGUID();
+        if (string.IsNullOrEmpty(selectedFileGUID))
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = "Please select a file first";
+            return responseData;
+        }
+        // check file is existed or not
+        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == selectedFileGUID && f.IsDeleted == 0)
+            .FirstOrDefaultAsync();
+        if (existedFile == null)
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = $"File {selectedFileGUID} not found or deleted";
+            return responseData;
+        }
+        
+        var document = await _sqliteDb.Table<Documents>().Where(d => d.GUID == documentGUID && d.IsDeleted == 0).FirstOrDefaultAsync();
+        if (document == null)
+        {
+            responseData.StatusCode = HttpStatusCode.BadRequest;
+            responseData.Message = $"Document {documentGUID} not found or was deleted";
+            return responseData;
+        }
+        
+        // get file path
+        var filePath = Path.Combine(_appSettings.StoragePath, existedFile.GUID, document.FileName);
+        if (File.Exists(filePath))
+        {
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            var mimeType = GetMimeType(filePath);
+            
+            responseData.StatusCode = HttpStatusCode.OK;
+            responseData.Data = new { Content = fileBytes, MimeType = mimeType, document };
+            responseData.Success = true;
+            responseData.Message = $"Retrieve document success";
+            return responseData;
+        }
+        else
+        {
+            responseData.StatusCode = HttpStatusCode.NotFound;
+            responseData.Message = $"File {document.FileName} not found";
+            return responseData;
+        }
+    }
+    private string GetMimeType(string filePath)
+    {
+        var extension = Path.GetExtension(filePath).ToLowerInvariant();
+        return extension switch
+        {
+            ".jpg" => "image/jpeg",
+            ".jpeg" => "image/jpeg",
+            ".png" => "image/png",
+            ".gif" => "image/gif",
+            _ => "application/octet-stream",
+        };
     }
 }
