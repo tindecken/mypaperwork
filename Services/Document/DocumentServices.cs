@@ -66,6 +66,7 @@ public class DocumentServices
             }
             else continue;
         }
+        var documents = new List<Documents>();
         foreach (var file in files)
         {
             var fileSize = file.Length;
@@ -94,9 +95,10 @@ public class DocumentServices
                 CreatedBy = _httpContextUtils.GetUserGUID()
             };
             await _sqliteDb.InsertAsync(document);
+            documents.Add(document);
         }
 
-        responseData.Data = null;
+        responseData.Data = documents;
         responseData.Success = true;
         responseData.Message = $"Successfully added {files.Count} document(s) for paperwork: {existedPaperwork.Name}.";
         responseData.TotalRecords = files.Count;
