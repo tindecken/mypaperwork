@@ -46,9 +46,9 @@ namespace mypaperwork.Controllers.Files
         }
         [HttpGet("getfilesbyuser")]
         [Authorize]
-        public async Task<IActionResult> GetByFile([FromQuery] PaginationFilter filter)
+        public async Task<IActionResult> GetFilesByUser()
         {
-            var response = await _fileServices.GetFilesByUser(filter);
+            var response = await _fileServices.GetFilesByUser();
             
             return Transform(response);
         }

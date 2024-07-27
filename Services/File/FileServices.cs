@@ -149,7 +149,7 @@ public class FileServices
         return responseData;
     }
 
-    public async Task<GenericResponseData> GetFilesByUser(PaginationFilter filter)
+    public async Task<GenericResponseData> GetFilesByUser()
     {
         var responseData = new GenericResponseData();
         var token = _httpContextUtils.GetToken();
