@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>mypaperwork</name>
+    </assembly>
+    <members>
+        <member name="M:mypaperwork.Controllers.Authentication.AuthenticationController.Authenticate(mypaperwork.Models.Authentication.AuthenticateRequestModel)">
+            <summary>
+            Login to system with user/pass
+            </summary>
+            <remarks>
+            Return: Token contains role, userId, ...
+            
+            Sample request:
+            
+                {
+                    "username": "tindecken",
+                    "password": "password"
+                }
+            </remarks>
+            <param name="model"></param>
+        </member>
+        <member name="M:mypaperwork.Utils.JWTUtils.attachUserToContext(Microsoft.AspNetCore.Http.HttpContext,mypaperwork.Services.User.UserServices,System.String)">
+            <summary>
+            Claim Users information from token, then add it into HttpContext, that can be retrieved Users information by HttpContext.Items["Users"]
+            </summary>
+            <param name="context">HttpContext</param>
+            <param name="userService">UserService</param>
+            <param name="token">jwt token</param>
+        </member>
+    </members>
+</doc>
