@@ -24,33 +24,33 @@ public class DocumentServices
         _appSettings = appSettings;
         _httpContextUtils = httpContextUtils;
     }
-    public async Task<GenericResponseData> Upload(string paperWorkGUID, IFormFileCollection files)
+    public async Task<GenericResponseData> Upload(string paperWorkId, IFormFileCollection files)
     {
         var responseData = new GenericResponseData();
         
         // check user is selected file or not
-        var selectedFileGUID = _httpContextUtils.GetSelectedFileGUID();
-        if (string.IsNullOrEmpty(selectedFileGUID))
+        var selectedFileId = _httpContextUtils.GetSelectedFileId();
+        if (string.IsNullOrEmpty(selectedFileId))
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
             responseData.Message = "Please select a file first";
             return responseData;
         }
         // check file is existed or not
-        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == selectedFileGUID && f.IsDeleted == 0)
+        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.Id == selectedFileId && f.IsDeleted == 0)
             .FirstOrDefaultAsync();
         if (existedFile == null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"File {selectedFileGUID} not found or deleted";
+            responseData.Message = $"File {selectedFileId} not found or deleted";
             return responseData;
         }
         // check exist paperwork
-        var existedPaperwork = await _sqliteDb.Table<Paperworks>().Where(c => c.GUID == paperWorkGUID && c.IsDeleted == 0).FirstOrDefaultAsync();
+        var existedPaperwork = await _sqliteDb.Table<Paperworks>().Where(c => c.Id == paperWorkId && c.IsDeleted == 0).FirstOrDefaultAsync();
         if (existedPaperwork == null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"Paperwork {paperWorkGUID}  not found or was deleted";
+            responseData.Message = $"Paperwork {paperWorkId}  not found or was deleted";
             return responseData;
         }
 
@@ -72,14 +72,14 @@ public class DocumentServices
             var fileSize = file.Length;
             var fileNameFull = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName?.Trim('"');
             var fileName = new string((Path.GetFileNameWithoutExtension(fileNameFull) ?? string.Empty).Take(20).ToArray()).Replace(" ", "-");
-            fileName = fileName + Guid.NewGuid() + Path.GetExtension(fileNameFull);
+            fileName = fileName + Ulid.NewUlid() + Path.GetExtension(fileNameFull);
             // create folder if not exist
-            if (!Directory.Exists(Path.Combine(storagePath, existedFile.GUID)))
+            if (!Directory.Exists(Path.Combine(storagePath, existedFile.Id)))
             {
-                Directory.CreateDirectory(Path.Combine(storagePath, existedFile.GUID));
+                Directory.CreateDirectory(Path.Combine(storagePath, existedFile.Id));
             }
 
-            var sourceFile = Path.Combine(storagePath, existedFile.GUID, fileName);
+            var sourceFile = Path.Combine(storagePath, existedFile.Id, fileName);
             await using (var stream = new FileStream(sourceFile, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -87,12 +87,12 @@ public class DocumentServices
 
             var document = new Documents()
             {
-                GUID = Guid.NewGuid().ToString(),
-                PaperWorkGUID = paperWorkGUID,
-                Folder = existedFile.GUID,
+                Id = Ulid.NewUlid().ToString(),
+                PaperWorkId = paperWorkId,
+                Folder = existedFile.Id,
                 FileName = fileName,
                 FileSize = fileSize,
-                CreatedBy = _httpContextUtils.GetUserGUID()
+                CreatedBy = _httpContextUtils.GetUserId()
             };
             await _sqliteDb.InsertAsync(document);
             documents.Add(document);
@@ -104,38 +104,38 @@ public class DocumentServices
         responseData.TotalRecords = files.Count;
         return responseData;
     }
-    public async Task<GenericResponseData> GetDocumentByGUID(string documentGUID)
+    public async Task<GenericResponseData> GetDocumentById(string documentId)
     {
         var responseData = new GenericResponseData();
         
         // check user is selected file or not
-        var selectedFileGUID = _httpContextUtils.GetSelectedFileGUID();
-        if (string.IsNullOrEmpty(selectedFileGUID))
+        var selectedFileId = _httpContextUtils.GetSelectedFileId();
+        if (string.IsNullOrEmpty(selectedFileId))
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
             responseData.Message = "Please select a file first";
             return responseData;
         }
         // check file is existed or not
-        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == selectedFileGUID && f.IsDeleted == 0)
+        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.Id == selectedFileId && f.IsDeleted == 0)
             .FirstOrDefaultAsync();
         if (existedFile == null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"File {selectedFileGUID} not found or deleted";
+            responseData.Message = $"File {selectedFileId} not found or deleted";
             return responseData;
         }
         
-        var document = await _sqliteDb.Table<Documents>().Where(d => d.GUID == documentGUID && d.IsDeleted == 0).FirstOrDefaultAsync();
+        var document = await _sqliteDb.Table<Documents>().Where(d => d.Id == documentId && d.IsDeleted == 0).FirstOrDefaultAsync();
         if (document == null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"Document {documentGUID} not found or was deleted";
+            responseData.Message = $"Document {documentId} not found or was deleted";
             return responseData;
         }
         
         // get file path
-        var filePath = Path.Combine(_appSettings.StoragePath, existedFile.GUID, document.FileName);
+        var filePath = Path.Combine(_appSettings.StoragePath, existedFile.Id, document.FileName);
         if (File.Exists(filePath))
         {
             var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);

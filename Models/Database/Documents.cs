@@ -6,10 +6,10 @@ namespace mypaperwork.Models.Database
     [Table("Documents")]
     public class Documents
     {
-        [PrimaryKey, Length(36,36)]
-        public string GUID { get; set; }
-        [Length(36,36)]
-        public string PaperWorkGUID { get; set; }
+        [PrimaryKey, Length(26,26)]
+        public string Id { get; set; }
+        [Length(26,26)]
+        public string PaperWorkId { get; set; }
         public string Folder { get; set; }
         public string FileName { get; set; }
         public decimal FileSize { get; set; }

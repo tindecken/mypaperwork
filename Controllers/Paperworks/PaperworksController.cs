@@ -36,11 +36,11 @@ public class PaperworksController: TransformResponse
             
         return Transform(response);
     }
-    [HttpDelete("delete/category/{categoryGUID:length(36)}/paperwork/{paperworkGUID:length(36)}")]
+    [HttpDelete("delete/category/{categoryId:length(26)}/paperwork/{paperworkId:length(26)}")]
     [Authorize(UserRole.Admin)]
-    public async Task<IActionResult> UpdatePaperwork(string categoryGUID, string paperworkGUID)
+    public async Task<IActionResult> UpdatePaperwork(string categoryId, string paperworkId)
     {
-        var response = await _paperworkServices.DeletePaperwork(categoryGUID, paperworkGUID);
+        var response = await _paperworkServices.DeletePaperwork(categoryId, paperworkId);
             
         return Transform(response);
     }
@@ -52,11 +52,11 @@ public class PaperworksController: TransformResponse
             
         return Transform(response);
     }
-    [HttpGet("getbycategory/{categoryGUID:length(36)}")]
+    [HttpGet("getbycategory/{categoryId:length(26)}")]
     [Authorize]
-    public async Task<IActionResult> GetByCategory(string categoryGUID, [FromQuery] PaginationFilter filter)
+    public async Task<IActionResult> GetByCategory(string categoryId, [FromQuery] PaginationFilter filter)
     {
-        var response = await _paperworkServices.GetByCategory(categoryGUID, filter);
+        var response = await _paperworkServices.GetByCategory(categoryId, filter);
             
         return Transform(response);
     }

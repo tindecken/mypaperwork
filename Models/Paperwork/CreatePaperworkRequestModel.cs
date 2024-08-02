@@ -6,8 +6,8 @@ public class CreatePaperworkRequestModel
 {
     [Required, MaxLength(100)]
     public string Name { get; set; }
-    [Required, Length(36, 36)]
-    public string CategoryGUID { get; set; }
+    [Required, Length(26, 26)]
+    public string CategoryId { get; set; }
     [MaxLength(5000)]
     public string? Description { get; set; }
     public string? IssuedDate { get; set; }

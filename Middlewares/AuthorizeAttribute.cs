@@ -31,9 +31,9 @@ public class AuthorizeAttribute : Attribute, IAuthorizationFilter
         }
         else
         {
-            // if userGUID == null, user is not logged in --> return Unauthorized
-            var userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
-            if (string.IsNullOrEmpty(userGUID))
+            // if userId == null, user is not logged in --> return Unauthorized
+            var userId = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userId")?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
                 responseData.Success = false;
                 responseData.Message = "Unauthorized";

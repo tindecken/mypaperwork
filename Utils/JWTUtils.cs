@@ -23,10 +23,10 @@ public class JWTUtils
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[] 
-            { new Claim("userGUID", users.GUID.ToString()),
+            { new Claim("userId", users.Id.ToString()),
                 new Claim("systemRole", users.SystemRole),
                 new Claim("email", users.Email),
-                usersFiles != null ? new Claim("selectedFileGUID", usersFiles.FileGUID.ToString()) : new Claim("selectedFileGUID", ""),
+                usersFiles != null ? new Claim("selectedFileId", usersFiles.FileId.ToString()) : new Claim("selectedFileId", ""),
                 usersFiles != null ? new Claim("selectedFileRole", usersFiles.Role.ToString()) : new Claim("selectedFileRole", ""),
             }),
             Expires = DateTime.UtcNow.AddDays(1),

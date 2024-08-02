@@ -36,11 +36,11 @@ namespace mypaperwork.Controllers.Categories
 
             return Transform(response);
         }
-        [HttpDelete("delete/{categoryGUID:length(36)}")]
+        [HttpDelete("delete/{categoryId:length(26)}")]
         [Authorize(UserRole.Admin)]
-        public async Task<IActionResult> DeleteCategory(string categoryGUID)
+        public async Task<IActionResult> DeleteCategory(string categoryId)
         {
-            var response = await _categoryServices.DeleteCategory(categoryGUID);
+            var response = await _categoryServices.DeleteCategory(categoryId);
             return Transform(response);
         }
     }

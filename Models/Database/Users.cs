@@ -6,8 +6,8 @@ namespace mypaperwork.Models.Database
     [Table("Users")]
     public class Users
     {
-        [PrimaryKey, Length(36,36)]
-        public string GUID { get; set; }
+        [PrimaryKey, Length(26,26)]
+        public string Id { get; set; }
         public string Name { get; set; }
         [Unique]
         public string UserName { get; set; }

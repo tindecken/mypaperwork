@@ -20,11 +20,11 @@ namespace mypaperwork.Controllers.Files
             _fileServices = fileServices;
         }
 
-        [HttpGet("selectfile/{fileGUID}")]
+        [HttpGet("selectfile/{fileId}")]
         [Authorize]
-        public async Task<IActionResult> SelectFile(string fileGUID)
+        public async Task<IActionResult> SelectFile(string fileId)
         {
-            var response = await _fileServices.SelectFile(fileGUID);
+            var response = await _fileServices.SelectFile(fileId);
             
             return Transform(response);
         }
@@ -36,11 +36,11 @@ namespace mypaperwork.Controllers.Files
             
             return Transform(response);
         }
-        [HttpDelete("{fileGUID:length(36)}")]
+        [HttpDelete("{fileId:length(26)}")]
         [Authorize(UserRole.Admin)]
-        public async Task<IActionResult> CreateFile(string fileGUID)
+        public async Task<IActionResult> CreateFile(string fileId)
         {
-            var response = await _fileServices.DeleteFile(fileGUID);
+            var response = await _fileServices.DeleteFile(fileId);
             
             return Transform(response);
         }

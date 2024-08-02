@@ -7,12 +7,12 @@ namespace mypaperwork.Models.Database
     [Table("UsersFiles")]
     public class UsersFiles
     {
-        [PrimaryKey, Length(36,36)]
-        public string GUID { get; set; }
-        [Length(36,36)]
-        public string FileGUID { get; set; }
-        [Length(36,36)]
-        public string UserGUID { get; set; }
+        [PrimaryKey, Length(26,26)]
+        public string Id { get; set; }
+        [Length(26,26)]
+        public string FileId { get; set; }
+        [Length(26,26)]
+        public string UserId { get; set; }
         public string Role { get; set; }
         public int? IsSelected { get; set; } = 0;
         public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");

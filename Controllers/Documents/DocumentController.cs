@@ -25,24 +25,24 @@ public class Document : TransformResponse
     {
         var formCollection = await Request.ReadFormAsync();
         var files = formCollection.Files;
-        var paperWorkGUID = formCollection["paperWorkGUID"];
-        if (string.IsNullOrEmpty(paperWorkGUID))
+        var paperWorkId = formCollection["paperWorkId"];
+        if (string.IsNullOrEmpty(paperWorkId))
         {
-            return BadRequest("PaperworkGUID is empty!");
+            return BadRequest("PaperworkId is empty!");
         }
 
         if (files.Any(f => f.Length == 0))
         {
             return BadRequest();
         }
-        var response = await _documentServices.Upload(paperWorkGUID, files);
+        var response = await _documentServices.Upload(paperWorkId, files);
         return Transform(response);
     }
     [Authorize]
-    [HttpGet("{documentGUID:length(36)}")]
-    public async Task<IActionResult> GetDocumentsByGUID(string documentGUID)
+    [HttpGet("{documentId:length(26)}")]
+    public async Task<IActionResult> GetDocumentsById(string documentId)
     {
-        var response = await _documentServices.GetDocumentByGUID(documentGUID);
+        var response = await _documentServices.GetDocumentById(documentId);
         return Transform(response);
     }
 }

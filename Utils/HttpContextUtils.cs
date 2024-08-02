@@ -24,28 +24,28 @@ public class HttpContextUtils
     {
         var token = new Token();
         var tokenClaims = (JwtSecurityToken)_httpContextAccessor.HttpContext.Items["Token"];
-        token.userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
+        token.userId = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userId")?.Value;
         token.email = tokenClaims.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
         token.systemRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "systemRole")?.Value;
-        token.selectedFileGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileGUID")?.Value;
+        token.selectedFileId = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileId")?.Value;
         token.selectedFileRole = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileRole")?.Value;
         return token;
     }
 
-    public string? GetUserGUID()
+    public string? GetUserId()
     {
-        var userGUID = string.Empty;
+        var userId = string.Empty;
         var tokenClaims = (JwtSecurityToken)_httpContextAccessor.HttpContext.Items["Token"];
         if (tokenClaims == null) return null;
-        userGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userGUID")?.Value;
-        return userGUID;
+        userId = tokenClaims.Claims.FirstOrDefault(c => c.Type == "userId")?.Value;
+        return userId;
     }
-    public string? GetSelectedFileGUID()
+    public string? GetSelectedFileId()
     {
-        var fileGUID = string.Empty;
+        var fileId = string.Empty;
         var tokenClaims = (JwtSecurityToken)_httpContextAccessor.HttpContext.Items["Token"];
         if (tokenClaims == null) return null;
-        fileGUID = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileGUID")?.Value;
-        return fileGUID;
+        fileId = tokenClaims.Claims.FirstOrDefault(c => c.Type == "selectedFileId")?.Value;
+        return fileId;
     }
 }

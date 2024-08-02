@@ -70,13 +70,13 @@ public class UserServices
         if (decryptedPassword.Equals(model.Password))
         {
             // TODO: Get all files associated with users
-            var userFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == user.GUID && uf.IsDeleted == 0).ToListAsync();
+            var userFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserId == user.Id && uf.IsDeleted == 0).ToListAsync();
             
             // filter deleted file
             var userFilesWithoutDeletedFiles = new List<UsersFiles>();
             foreach (var userFile in userFiles)
             {
-                var file = await _sqliteDb.Table<Models.Database.FilesDBModel>().Where(f => f.GUID == userFile.FileGUID && f.IsDeleted == 0).FirstOrDefaultAsync();
+                var file = await _sqliteDb.Table<Models.Database.FilesDBModel>().Where(f => f.Id == userFile.FileId && f.IsDeleted == 0).FirstOrDefaultAsync();
                 if (file != null) userFilesWithoutDeletedFiles.Add(userFile);
             }
             // selectedUserFile
@@ -131,7 +131,7 @@ public class UserServices
         //        responseData.StatusCode = HttpStatusCode.BadRequest;
         //        return responseData;
         //    }
-        //    var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == changePasswordData.UserGUID);
+        //    var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == changePasswordData.UserId);
         //    if (user == null)
         //    {
         //        responseData.Success = false;
@@ -169,7 +169,7 @@ public class UserServices
         //    ICryptoTransform cTransform = tripDes2.CreateEncryptor();
         //    byte[] resultArray = cTransform.TransformFinalBlock(DataToEncrypt, 0, DataToEncrypt.Length);
 
-        //    var userUpdate = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == changePasswordData.UserGUID);
+        //    var userUpdate = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == changePasswordData.UserId);
         //    userUpdate.Password = Convert.ToBase64String(resultArray);
         //    await _dbContext.SaveChangesAsync();
 
@@ -232,7 +232,7 @@ public class UserServices
 
         //    var createUser = _mapper.Map<Users>(createUserRequestModel);
         //    createUser.CreatedOn = DateTime.UtcNow.ToString("u");;
-        //    createUser.CreatedById = httpContextUtils.getUserGUID();
+        //    createUser.CreatedById = httpContextUtils.getUserId();
         //    createUser.Password = Convert.ToBase64String(resultArray);
         //    var a = await _dbContext.Users.AddAsync(createUser);
         //    await _dbContext.SaveChangesAsync();

@@ -24,17 +24,17 @@ public class LoggingServices
         var responseData = new GenericResponseData();
 
         var httpContextUtils = new HttpContextUtils(_httpContextAccessor);
-        var userGUID = httpContextUtils.GetUserGUID();
+        var userId = httpContextUtils.GetUserId();
         var ipAddress = httpContextUtils.GetClientIPAddress();
         var logging = new Logs()
         {
-            GUID = Guid.NewGuid().ToString(),
+            Id = Ulid.NewUlid().ToString(),
             ActionType = loggingDTO.ActionType,
             Method = loggingDTO.Method,
             Message = loggingDTO.Message,
             OldData = loggingDTO.OldData,
             NewData = loggingDTO.NewData,
-            ActionBy = string.IsNullOrEmpty(userGUID) ? "Not specified" : userGUID,
+            ActionBy = string.IsNullOrEmpty(userId) ? "Not specified" : userId,
             IPAddress = ipAddress
         };
         await _sqliteDb.InsertAsync(logging);

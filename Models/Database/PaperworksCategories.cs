@@ -6,12 +6,12 @@ namespace mypaperwork.Models.Database
     [Table("PaperworksCategories")]
     public class PaperworksCategories
     {
-        [PrimaryKey, Length(36,36)]
-        public string GUID { get; set; }
-        [Length(36,36)]
-        public string PaperworkGUID { get; set; }
-        [Length(36,36)]
-        public string? CategoryGUID { get; set; }
+        [PrimaryKey, Length(26,26)]
+        public string Id { get; set; }
+        [Length(26,26)]
+        public string PaperworkId { get; set; }
+        [Length(26,26)]
+        public string? CategoryId { get; set; }
         public string CreatedDate { get; set; } = DateTime.UtcNow.ToString("u");
         public string? CreatedBy { get; set; }
         public string? UpdatedDate { get; set; }

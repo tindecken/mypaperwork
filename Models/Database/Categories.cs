@@ -6,10 +6,10 @@ namespace mypaperwork.Models.Database
     [Table("Categories")]
     public class Categories
     {
-        [PrimaryKey, Length(36,36)]
-        public string GUID { get; set; }
-        [NotNull, Length(36,36)]
-        public string FileGUID { get; set; }
+        [PrimaryKey, Length(26,26)]
+        public string Id { get; set; }
+        [NotNull, Length(26,26)]
+        public string FileId { get; set; }
         [NotNull]
         public string Name { get; set; }
         public string? Description { get; set; }

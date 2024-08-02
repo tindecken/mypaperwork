@@ -29,28 +29,28 @@ public class FileServices
         _jwtUtils = jwtUtils;
     }
 
-    public async Task<GenericResponseData> SelectFile(string fileGUID)
+    public async Task<GenericResponseData> SelectFile(string fileId)
     {
         var responseData = new GenericResponseData();
         var token = _httpContextUtils.GetToken();
-        var userGUID = token.userGUID;
-        var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == fileGUID && f.IsDeleted == 0).FirstOrDefaultAsync();
+        var userId = token.userId;
+        var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.Id == fileId && f.IsDeleted == 0).FirstOrDefaultAsync();
         if (file == null ) { 
             responseData.StatusCode = HttpStatusCode.NotFound;
-            responseData.Message = $"File {fileGUID} not found or was deleted.";
+            responseData.Message = $"File {fileId} not found or was deleted.";
             responseData.Success = true;
             return responseData;
         }
-        var userfileGUID = await _dbUtils.GetSelectedUsersFilesGUID(userGUID, fileGUID);
-        if (string.IsNullOrEmpty(userfileGUID)){ 
+        var userfileId = await _dbUtils.GetSelectedUsersFilesId(userId, fileId);
+        if (string.IsNullOrEmpty(userfileId)){ 
             responseData.StatusCode = HttpStatusCode.NotFound;
             responseData.Success = false;
             responseData.Message = "There's no file associated.";
             return responseData;
         }
-        await _dbUtils.SetSelectedFileAsync(userGUID, fileGUID);
-        var user = await _sqliteDb.Table<Users>().Where(u => u.GUID == userGUID).FirstOrDefaultAsync();
-        var selectedUserFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.FileGUID == fileGUID).FirstOrDefaultAsync();
+        await _dbUtils.SetSelectedFileAsync(userId, fileId);
+        var user = await _sqliteDb.Table<Users>().Where(u => u.Id == userId).FirstOrDefaultAsync();
+        var selectedUserFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserId == userId && uf.FileId == fileId).FirstOrDefaultAsync();
         // Regenerate token
         var reGeneratedtoken = _jwtUtils.generateJwtToken(user, selectedUserFile);
         var response = new AuthenticateResponse(user, reGeneratedtoken);
@@ -65,13 +65,13 @@ public class FileServices
     {
         var responseData = new GenericResponseData();
         var token = _httpContextUtils.GetToken();
-        var userGUID = token.userGUID;
+        var userId = token.userId;
         
         // check existed file
         var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.Name == model.Name && f.IsDeleted == 0).FirstOrDefaultAsync();
         if (existedFile != null)
         {
-            var existedUsersFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.FileGUID == existedFile.GUID && uf.IsDeleted == 0).FirstOrDefaultAsync();
+            var existedUsersFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserId == userId && uf.FileId == existedFile.Id && uf.IsDeleted == 0).FirstOrDefaultAsync();
             if (existedUsersFiles != null)
             {
                 responseData.StatusCode = HttpStatusCode.BadRequest;
@@ -82,24 +82,24 @@ public class FileServices
         
         var file = new FilesDBModel
         {
-            GUID = Guid.NewGuid().ToString(),
+            Id = Ulid.NewUlid().ToString(),
             Name = model.Name.Trim(),
             Description = model.Description,
-            CreatedBy = userGUID,
+            CreatedBy = userId,
             IsDeleted = 0
         };
         await _sqliteDb.InsertAsync(file);
         var userfile = new UsersFiles
         {
-            GUID = Guid.NewGuid().ToString(),
-            UserGUID = userGUID,
-            FileGUID = file.GUID,
+            Id = Ulid.NewUlid().ToString(),
+            UserId = userId,
+            FileId = file.Id,
             Role = "Admin"
         };
         await _sqliteDb.InsertAsync(userfile);
-        await _dbUtils.SetSelectedFileAsync(userGUID, file.GUID);
+        await _dbUtils.SetSelectedFileAsync(userId, file.Id);
         // Regenerate token
-        var user = await _sqliteDb.Table<Users>().Where(u => u.GUID == userGUID).FirstOrDefaultAsync();
+        var user = await _sqliteDb.Table<Users>().Where(u => u.Id == userId).FirstOrDefaultAsync();
         var reGeneratedtoken = _jwtUtils.generateJwtToken(user, userfile);
         var response = new AuthenticateResponse(user, reGeneratedtoken);
         responseData.Data = response;
@@ -109,42 +109,42 @@ public class FileServices
         responseData.Success = true;
         return responseData;
     }
-    public async Task<GenericResponseData> DeleteFile(string fileGUID)
+    public async Task<GenericResponseData> DeleteFile(string fileId)
     {
         var responseData = new GenericResponseData();
         var token = _httpContextUtils.GetToken();
-        var userGUID = token.userGUID;
+        var userId = token.userId;
         
         // check existed file
-        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == fileGUID && f.IsDeleted == 0).FirstOrDefaultAsync();
+        var existedFile = await _sqliteDb.Table<FilesDBModel>().Where(f => f.Id == fileId && f.IsDeleted == 0).FirstOrDefaultAsync();
         if (existedFile == null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"File {fileGUID} is not existed.";
+            responseData.Message = $"File {fileId} is not existed.";
             return responseData;
         }
-        var existedUserFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.FileGUID == fileGUID && uf.IsDeleted == 0).FirstOrDefaultAsync();
+        var existedUserFile = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserId == userId && uf.FileId == fileId && uf.IsDeleted == 0).FirstOrDefaultAsync();
         if (existedUserFile == null)
         {
             responseData.StatusCode = HttpStatusCode.BadRequest;
-            responseData.Message = $"File {fileGUID} is not associated with user {userGUID}.";
+            responseData.Message = $"File {fileId} is not associated with user {userId}.";
             return responseData;
         }
         // update file
         existedFile.IsDeleted = 1;
-        existedFile.UpdatedBy = userGUID;
+        existedFile.UpdatedBy = userId;
         existedFile.UpdatedDate = DateTime.UtcNow.ToString("u");
         await _sqliteDb.UpdateAsync(existedFile);
         
         // update userfile
         existedUserFile.IsDeleted = 1;
         existedUserFile.IsSelected = 0;
-        existedUserFile.UpdatedBy = userGUID;
+        existedUserFile.UpdatedBy = userId;
         existedUserFile.UpdatedDate = DateTime.UtcNow.ToString("u");
         await _sqliteDb.UpdateAsync(existedUserFile);
         
         responseData.StatusCode = HttpStatusCode.OK;
-        responseData.Message = $"Delete file: {fileGUID} successfully.";
+        responseData.Message = $"Delete file: {fileId} successfully.";
         responseData.Success = true;
         return responseData;
     }
@@ -153,14 +153,14 @@ public class FileServices
     {
         var responseData = new GenericResponseData();
         var token = _httpContextUtils.GetToken();
-        var userGUID = token.userGUID;
-        var userFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserGUID == userGUID && uf.IsDeleted == 0)
+        var userId = token.userId;
+        var userFiles = await _sqliteDb.Table<UsersFiles>().Where(uf => uf.UserId == userId && uf.IsDeleted == 0)
             .ToListAsync();
         var files = new List<FilesDBModel>();
 
         foreach (var userFile in userFiles)
         {
-            var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.GUID == userFile.FileGUID && f.IsDeleted == 0)
+            var file = await _sqliteDb.Table<FilesDBModel>().Where(f => f.Id == userFile.FileId && f.IsDeleted == 0)
                 .FirstOrDefaultAsync();
             if (file != null) files.Add(file);
         }

@@ -6,8 +6,8 @@ namespace mypaperwork.Models.Database
     [Table("Paperworks")]
     public class Paperworks
     {
-        [PrimaryKey, Length(36,36)]
-        public string GUID { get; set; }
+        [PrimaryKey, Length(26,26)]
+        public string Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
         public string? IssuedDate { get; set; }

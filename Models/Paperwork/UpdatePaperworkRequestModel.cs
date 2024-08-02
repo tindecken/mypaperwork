@@ -4,8 +4,8 @@ namespace mypaperwork.Models.Paperwork;
 
 public class UpdatePaperworkRequestModel
 {
-    [Required, Length(36,36)]
-    public string GUID { get; set; }
+    [Required, Length(26,26)]
+    public string Id { get; set; }
     [MaxLength(100)]
     public string? Name { get; set; }
     [MaxLength(5000)]

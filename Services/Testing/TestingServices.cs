@@ -77,7 +77,7 @@ public class TestingServices
             var encryptedPassword = Convert.ToBase64String(resultArray);
             var newUser = new Users()
             {
-                GUID = Guid.NewGuid().ToString(),
+                Id = Ulid.NewUlid().ToString(),
                 Name = "Hoang Nguyen",
                 Email = "tindecken@gmail.com",
                 SystemRole = "SysAdmin",
@@ -88,7 +88,7 @@ public class TestingServices
         
             var newUser2 = new Users()
             {
-                GUID = Guid.NewGuid().ToString(),
+                Id = Ulid.NewUlid().ToString(),
                 Name = "Hoang Nguyen 2",
                 Email = "tindecken2@gmail.com",
                 SystemRole = "SysAdmin",
@@ -98,21 +98,21 @@ public class TestingServices
             await _sqliteDb.InsertAsync(newUser2);
         
             // create new file
-            var fileGUID = "d0286b02-d632-4f4e-a259-5b42c1edff68";
+            var fileId = "01D7CB31YQKCJPY9FDTN2WTAFF";
             var file = new Models.Database.FilesDBModel()
             {
-                GUID = fileGUID,
+                Id = fileId,
                 Name = "Tindecken's File",
                 Description = "File for user tindecken",
-                CreatedBy = newUser.GUID
+                CreatedBy = newUser.Id
             };
             await _sqliteDb.InsertAsync(file);
             // Associate user and file with role: ADMIN
             var newUserFile = new UsersFiles()
             {
-                GUID = Guid.NewGuid().ToString(),
-                UserGUID = newUser.GUID.ToString(),
-                FileGUID = fileGUID,
+                Id = Ulid.NewUlid().ToString(),
+                UserId = newUser.Id.ToString(),
+                FileId = fileId,
                 Role = "Admin",
                 IsSelected = 0,
             };
@@ -120,9 +120,9 @@ public class TestingServices
             // Associate user2 and file with role: USER
             var newUserFile2 = new UsersFiles()
             {
-                GUID = Guid.NewGuid().ToString(),
-                UserGUID = newUser2.GUID.ToString(),
-                FileGUID = fileGUID,
+                Id = Ulid.NewUlid().ToString(),
+                UserId = newUser2.Id.ToString(),
+                FileId = fileId,
                 Role = "User",
                 IsSelected = 0
             };
@@ -131,35 +131,35 @@ public class TestingServices
             // Create new Category of file 1
             var category = new Categories()
             {
-                GUID = Guid.NewGuid().ToString(),
-                FileGUID = fileGUID,
+                Id = Ulid.NewUlid().ToString(),
+                FileId = fileId,
                 Name = "Hóa Đơn",
                 Description = "Hóa Đơn",
-                CreatedBy = newUser.GUID
+                CreatedBy = newUser.Id
             };
             await _sqliteDb.InsertAsync(category);
         
             // Create new Category 2 of file 1
             var category2 = new Categories()
             {
-                GUID = Guid.NewGuid().ToString(),
-                FileGUID = fileGUID,
+                Id = Ulid.NewUlid().ToString(),
+                FileId = fileId,
                 Name = "Mua sắm",
                 Description = "Mua sắm",
-                CreatedBy = newUser.GUID
+                CreatedBy = newUser.Id
             };
             await _sqliteDb.InsertAsync(category2);
         
             // create paperwork1 for category "Hóa Đơn"
             var paperwork1 = new Paperworks()
             {
-                GUID = Guid.NewGuid().ToString(),
+                Id = Ulid.NewUlid().ToString(),
                 Name = "Hóa đơn tháng 1",
                 Description = "Hóa đơn tháng 1",
                 IssuedDate = "2024-01-01",
                 Price = 1000,
                 PriceCurrency = "USD",
-                CreatedBy = newUser.GUID,
+                CreatedBy = newUser.Id,
         
             };
             await _sqliteDb.InsertAsync(paperwork1);
@@ -167,31 +167,31 @@ public class TestingServices
             // create paperwork 2 for category "Hóa Đơn"
             var paperwork2 = new Paperworks()
             {
-                GUID = Guid.NewGuid().ToString(),
+                Id = Ulid.NewUlid().ToString(),
                 Name = "Hóa đơn tháng 2",
                 Description = "Hóa đơn tháng 2",
                 IssuedDate = "2024-02-01",
                 Price = 2000,
                 PriceCurrency = "USD",
-                CreatedBy = newUser.GUID,
+                CreatedBy = newUser.Id,
         
             };
             // Associate 2 paperworks with category "Hóa Đơn"
             var paperworkCategory = new PaperworksCategories()
             {
-                GUID = Guid.NewGuid().ToString(),
-                PaperworkGUID = paperwork1.GUID,
-                CategoryGUID = category.GUID,
-                CreatedBy = newUser.GUID
+                Id = Ulid.NewUlid().ToString(),
+                PaperworkId = paperwork1.Id,
+                CategoryId = category.Id,
+                CreatedBy = newUser.Id
             };
             await _sqliteDb.InsertAsync(paperworkCategory);
         
             var paperworkCategory2= new PaperworksCategories()
             {
-                GUID = Guid.NewGuid().ToString(),
-                PaperworkGUID = paperwork2.GUID,
-                CategoryGUID = category.GUID,
-                CreatedBy = newUser.GUID
+                Id = Ulid.NewUlid().ToString(),
+                PaperworkId = paperwork2.Id,
+                CategoryId = category.Id,
+                CreatedBy = newUser.Id
             };
             await _sqliteDb.InsertAsync(paperworkCategory2);
             await _sqliteDb.InsertAsync(paperwork2);
@@ -201,36 +201,36 @@ public class TestingServices
             {
                 var newPaperwork = new Paperworks()
                 {
-                    GUID = Guid.NewGuid().ToString(),
+                    Id = Ulid.NewUlid().ToString(),
                     Name = $"Hóa đơn {i}",
                     Description = $"Hóa đơn {i}",
                     IssuedDate = DateTime.UtcNow.AddDays(-i).ToString("u"),
                     Price = (i+1000),
                     PriceCurrency = "USD",
-                    CreatedBy = newUser.GUID,
+                    CreatedBy = newUser.Id,
         
                 };
                 await _sqliteDb.InsertAsync(newPaperwork);
                 // associate newPaperwork with category "Hóa Đơn"
                 var newPaperworkCategory = new PaperworksCategories()
                 {
-                    GUID = Guid.NewGuid().ToString(),
-                    PaperworkGUID = newPaperwork.GUID,
-                    CategoryGUID = category.GUID,
-                    CreatedBy = newUser.GUID
+                    Id = Ulid.NewUlid().ToString(),
+                    PaperworkId = newPaperwork.Id,
+                    CategoryId = category.Id,
+                    CreatedBy = newUser.Id
                 };
                 await _sqliteDb.InsertAsync(newPaperworkCategory);
             }
             // create 2 paperworks and associate with category "Mua Sắm"
             var paperwork3 = new Paperworks()
             {
-                GUID = Guid.NewGuid().ToString(),
+                Id = Ulid.NewUlid().ToString(),
                 Name = "Mua Sắm 1",
                 Description = "Mua sắm 1",
                 IssuedDate = "2024-01-01",
                 Price = 1500,
                 PriceCurrency = "USD",
-                CreatedBy = newUser.GUID,
+                CreatedBy = newUser.Id,
         
             };
             await _sqliteDb.InsertAsync(paperwork3);
@@ -238,13 +238,13 @@ public class TestingServices
             // create paperwork 4 for category "Mua Sắm"
             var paperwork4 = new Paperworks()
             {
-                GUID = Guid.NewGuid().ToString(),
+                Id = Ulid.NewUlid().ToString(),
                 Name = "Mua Sắm 2",
                 Description = "Mua sắm 2",
                 IssuedDate = "2024-02-01",
                 Price = 2500,
                 PriceCurrency = "USD",
-                CreatedBy = newUser.GUID,
+                CreatedBy = newUser.Id,
         
             };
             await _sqliteDb.InsertAsync(paperwork4);
@@ -252,19 +252,19 @@ public class TestingServices
             // Associate 2 paperworks with category "Mua Sắm"
             var paperworkCategory3 = new PaperworksCategories()
             {
-                GUID = Guid.NewGuid().ToString(),
-                PaperworkGUID = paperwork3.GUID,
-                CategoryGUID = category2.GUID,
-                CreatedBy = newUser.GUID
+                Id = Ulid.NewUlid().ToString(),
+                PaperworkId = paperwork3.Id,
+                CategoryId = category2.Id,
+                CreatedBy = newUser.Id
             };
             await _sqliteDb.InsertAsync(paperworkCategory3);    
         
             var paperworkCategory4 = new PaperworksCategories()
             {
-                GUID = Guid.NewGuid().ToString(),
-                PaperworkGUID = paperwork4.GUID,
-                CategoryGUID = category2.GUID,
-                CreatedBy = newUser.GUID
+                Id = Ulid.NewUlid().ToString(),
+                PaperworkId = paperwork4.Id,
+                CategoryId = category2.Id,
+                CreatedBy = newUser.Id
             };
             await _sqliteDb.InsertAsync(paperworkCategory4);    
             
@@ -273,23 +273,23 @@ public class TestingServices
             {
                 var newPaperwork = new Paperworks()
                 {
-                    GUID = Guid.NewGuid().ToString(),
+                    Id = Ulid.NewUlid().ToString(),
                     Name = $"Mua Sắm {i}",
                     Description = $"Mua Sắm {i}",
                     IssuedDate = DateTime.UtcNow.AddDays(-i).ToString("u"),
                     Price = (i+5000),
                     PriceCurrency = "USD",
-                    CreatedBy = newUser.GUID,
+                    CreatedBy = newUser.Id,
         
                 };
                 await _sqliteDb.InsertAsync(newPaperwork);
                 // associate newPaperwork with category "Mua Sắm"
                 var newPaperworkCategory = new PaperworksCategories()
                 {
-                    GUID = Guid.NewGuid().ToString(),
-                    PaperworkGUID = newPaperwork.GUID,
-                    CategoryGUID = category2.GUID,
-                    CreatedBy = newUser.GUID
+                    Id = Ulid.NewUlid().ToString(),
+                    PaperworkId = newPaperwork.Id,
+                    CategoryId = category2.Id,
+                    CreatedBy = newUser.Id
                 };
                 await _sqliteDb.InsertAsync(newPaperworkCategory);
             }

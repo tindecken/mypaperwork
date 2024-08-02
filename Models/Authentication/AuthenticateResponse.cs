@@ -4,7 +4,7 @@ namespace mypaperwork.Models.Authentication;
 
 public class AuthenticateResponse
 {
-    public string GUID { get; set; }
+    public string Id { get; set; }
     public string Email { get; set; }
     public string Name { get; set; }
     public UserRole SystemRole { get; set; }
@@ -12,7 +12,7 @@ public class AuthenticateResponse
     public string Token { get; set; }
     public AuthenticateResponse(Users users, string resToken)
     {
-        GUID = users.GUID;
+        Id = users.Id;
         Email = users.Email;
         Name = users.Name;
         SystemRole = (UserRole)Enum.Parse(typeof(UserRole), users.SystemRole);
