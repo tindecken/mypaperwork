@@ -50,6 +50,7 @@ public class TestingServices
     public async Task<GenericResponseData> SeedingDatabase()
     {
         var responseData = new GenericResponseData();
+        var dbPath = _sqliteDb.DatabasePath;
         
         // clean up all tables
         await _sqliteDb.DeleteAllAsync<Users>();
@@ -294,7 +295,7 @@ public class TestingServices
                 await _sqliteDb.InsertAsync(newPaperworkCategory);
             }
         
-            responseData.Data = newUser;
+            responseData.Data = _sqliteDb.DatabasePath;
             responseData.Success = true;
             responseData.Message = "Successfully seeding database !";
             return responseData;
