@@ -39,5 +39,13 @@ namespace mypaperwork.Controllers.Authentication
 
             return Transform(response);
         }
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> RegisterUser(RegisterRequestModel model)
+        {
+            var response = await _userServices.RegisterUser(model);
+
+            return Transform(response);
+        }
     }
 }

@@ -110,9 +110,9 @@ public class UserServices
         return responseData;
     }
 
-    public async Task<GenericResponseData> ChangePassword(ChangePasswordRequestModel changePasswordData)
-    {
-        var responseData = new GenericResponseData();
+    // public async Task<GenericResponseData> ChangePassword(ChangePasswordRequestModel changePasswordData)
+    // {
+    //     var responseData = new GenericResponseData();
         //    // Get regression test
         //    // Check New Password and Confirm Password is the same
         //    if (!changePasswordData.NewPassword.Equals(changePasswordData.ConfirmNewPassword))
@@ -186,60 +186,72 @@ public class UserServices
 
         //    return responseData;
         //}
-        //public async Task<GenericResponseData> CreateUser(CreateUserRequestModel createUserRequestModel)
-        //{
-        //    var emailUtils = new EmailUtils();
-        //    var httpContextUtils = new HttpContextUtils(_httpContextAccessor);
-        //    var responseData = new GenericResponseData();
-        //    // Check email is valid or not
-        //    if (!emailUtils.isEmailValid(createUserRequestModel.Email))
-        //    {
-        //        responseData.Success = false;
-        //        responseData.Message = "Email is not valid!";
-        //        responseData.StatusCode = HttpStatusCode.BadRequest;
-        //        return responseData;
-        //    }
+        public async Task<GenericResponseData> RegisterUser(RegisterRequestModel registerUserRequestModel)
+        {
+            var emailUtils = new EmailUtils();
+            var responseData = new GenericResponseData();
+            // Check email is valid or not
+            if (!emailUtils.isEmailValid(registerUserRequestModel.Email))
+            {
+                responseData.Success = false;
+                responseData.Message = "Email is not valid!";
+                responseData.StatusCode = HttpStatusCode.BadRequest;
+                return responseData;
+            }
+            if (registerUserRequestModel.Password != registerUserRequestModel.ConfirmPassword)
+            {
+                responseData.Success = false;
+                responseData.Message = "Password and confirm password are not the same!";
+                responseData.StatusCode = HttpStatusCode.BadRequest;
+                return responseData;
+            }
 
-        //    // Check userName is exist or not
-        //    var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.UserName == createUserRequestModel.UserName);
-        //    if (user != null)
-        //    {
-        //        responseData.Success = false;
-        //        responseData.Message = "Users name is exist!";
-        //        responseData.StatusCode = HttpStatusCode.BadRequest;
-        //        return responseData;
-        //    }
+            // check username is exist or not
+            var existedUser = await _sqliteDb.Table<Users>().FirstOrDefaultAsync(u => u.UserName == registerUserRequestModel.UserName);
+            if (existedUser != null)
+            {
+                responseData.Success = false;
+                responseData.Message = "User name is exist!";
+                responseData.StatusCode = HttpStatusCode.BadRequest;
+                return responseData;
+            }
 
-        //    // check email is exist or not
-        //    var emailUser = await _dbContext.Users.FirstOrDefaultAsync(u => u.Email == createUserRequestModel.Email);
-        //    if (emailUser != null)
-        //    {
-        //        responseData.Success = false;
-        //        responseData.Message = "Email is exist!";
-        //        responseData.StatusCode = HttpStatusCode.BadRequest;
-        //        return responseData;
-        //    }
+            // check email is exist or not
+            var existedEmail = await _sqliteDb.Table<Users>().FirstOrDefaultAsync(u => u.Email == registerUserRequestModel.Email);
+            if (existedEmail != null)
+            {
+                responseData.Success = false;
+                responseData.Message = "Email is exist!";
+                responseData.StatusCode = HttpStatusCode.BadRequest;
+                return responseData;
+            }
 
-        //    // Encrypt password
-        //    MD5 md5 = MD5.Create();
-        //    var tripDes2 = TripleDES.Create();
-        //    tripDes2.Key = md5.ComputeHash(Encoding.UTF8.GetBytes(_JWTsecret));
-        //    tripDes2.Mode = CipherMode.ECB;
-        //    tripDes2.Padding = PaddingMode.PKCS7;
-        //    byte[] DataToEncrypt = UTF8Encoding.UTF8.GetBytes(createUserRequestModel.Password);
-        //    ICryptoTransform cTransform = tripDes2.CreateEncryptor();
-        //    byte[] resultArray = cTransform.TransformFinalBlock(DataToEncrypt, 0, DataToEncrypt.Length);
+            // Encrypt password
+            MD5 md5 = MD5.Create();
+            var tripDes2 = TripleDES.Create();
+            tripDes2.Key = md5.ComputeHash(Encoding.UTF8.GetBytes(_JWTsecret));
+            tripDes2.Mode = CipherMode.ECB;
+            tripDes2.Padding = PaddingMode.PKCS7;
+            byte[] DataToEncrypt = UTF8Encoding.UTF8.GetBytes(registerUserRequestModel.Password);
+            ICryptoTransform cTransform = tripDes2.CreateEncryptor();
+            byte[] resultArray = cTransform.TransformFinalBlock(DataToEncrypt, 0, DataToEncrypt.Length);
 
-        //    var createUser = _mapper.Map<Users>(createUserRequestModel);
-        //    createUser.CreatedOn = DateTime.UtcNow.ToString("u");;
-        //    createUser.CreatedById = httpContextUtils.getUserId();
-        //    createUser.Password = Convert.ToBase64String(resultArray);
-        //    var a = await _dbContext.Users.AddAsync(createUser);
-        //    await _dbContext.SaveChangesAsync();
+            var createUser = new Users()
+            {
+                Id = Ulid.NewUlid().ToString(),
+                Name = registerUserRequestModel.Name,
+                Email = registerUserRequestModel.Email,
+                UserName = registerUserRequestModel.UserName,
+                Password = Convert.ToBase64String(resultArray),
+                SystemRole = "SysUser",
+                IsDeleted = 0
+            };
+            await _sqliteDb.InsertAsync(createUser);
 
-        //    responseData.Success = true;
-        //    responseData.Message = "Create user successfully!";
-        //    responseData.StatusCode = HttpStatusCode.OK;
+            responseData.Data = createUser;
+            responseData.Success = true;
+            responseData.Message = "Register user successfully!";
+            responseData.StatusCode = HttpStatusCode.OK;
 
         return responseData;
     }
