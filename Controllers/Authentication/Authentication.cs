@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using mypaperwork.Middlewares;
+using mypaperwork.Models;
 using mypaperwork.Models.Authentication;
 using mypaperwork.Services.User;
 
@@ -44,6 +45,14 @@ namespace mypaperwork.Controllers.Authentication
         public async Task<IActionResult> RegisterUser(RegisterRequestModel model)
         {
             var response = await _userServices.RegisterUser(model);
+
+            return Transform(response);
+        }
+        [HttpPost("changepassword")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequestModel model)
+        {
+            var response = await _userServices.ChangePassword(model);
 
             return Transform(response);
         }
