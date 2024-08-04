@@ -30,7 +30,7 @@ public class TestingServices
             Success = true,
             Data = _appSettings,
             StatusCode = HttpStatusCode.OK,
-            Message = "App Settings"
+            Message = "App Settingsss"
         };
 
         return responseData;
