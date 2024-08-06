@@ -61,6 +61,8 @@ await sqliteDB.CreateTableAsync<Categories>();
 await sqliteDB.CreateTableAsync<Paperworks>();
 await sqliteDB.CreateTableAsync<PaperworksCategories>();
 await sqliteDB.CreateTableAsync<Documents>();
+await sqliteDB.CreateTableAsync<Settings>();
+await sqliteDB.CreateTableAsync<UsersSettings>();
 builder.Services.AddSingleton<SQLiteAsyncConnection>(sqliteDB);
 builder.Services.AddTransient<JWTUtils>();
 builder.Services.AddTransient<DBUtils>();
