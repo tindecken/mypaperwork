@@ -1,4 +1,6 @@
+using System.Net;
 using System.Reflection;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Options;
 using mypaperwork;
 using mypaperwork.Utils;
@@ -49,6 +51,11 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.Configure<AppSettings>(builder.Configuration);
+// Configure forwarded headers
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.KnownProxies.Add(IPAddress.Parse("192.168.1.17"));
+});
 builder.Services.AddSingleton<AppSettings>(appSettings => appSettings.GetRequiredService<IOptions<AppSettings>>().Value);
 // SQLite-net
 var appSettings = builder.Services.BuildServiceProvider().GetService<AppSettings>(); // Tip: retrieve added AppSettings service above for using
@@ -79,6 +86,10 @@ var app = builder.Build();
 app.UseMiddleware<EnableRequestRewindMiddleware>();
 app.UseMiddleware<JwtMiddleware>();
 app.UseMiddleware<ExceptionMiddleware>();
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -95,4 +106,5 @@ app.UseCors(x => x
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.MapGet("/", () => "Hello ForwardedHeadersOptions!");
 app.Run();
